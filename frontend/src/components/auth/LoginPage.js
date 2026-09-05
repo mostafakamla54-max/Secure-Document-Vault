@@ -58,6 +58,10 @@ function LoginPage() {
               required
               variant="outlined"
               placeholder="أدخل اسم المستخدم"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
+              autoComplete="username"
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">

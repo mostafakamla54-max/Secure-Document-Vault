@@ -70,7 +70,7 @@ class LoginView(TokenObtainPairView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request, *args, **kwargs):
-        identifier = request.data.get('username', '') or request.data.get('email', '')
+        identifier = (request.data.get('username', '') or request.data.get('email', '')).strip()
         password = request.data.get('password', '')
         if not identifier or not password:
             return Response(
@@ -78,13 +78,10 @@ class LoginView(TokenObtainPairView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        try:
-            user = User.objects.get(username=identifier)
-        except User.DoesNotExist:
-            try:
-                user = User.objects.get(email=identifier)
-            except User.DoesNotExist:
-                user = None
+        user = (
+            User.objects.filter(username__iexact=identifier).first()
+            or User.objects.filter(email__iexact=identifier).first()
+        )
 
         if user is None:
             return Response(
@@ -112,8 +109,11 @@ class LoginView(TokenObtainPairView):
             )
 
         reset_failed_login(user)
-        token = super().post(request, *args, **kwargs)
-        data = token.data
+        refresh = LoginSerializer.get_token(user)
+        data = {
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        }
         create_active_session(user, request)
         return Response(data)
 

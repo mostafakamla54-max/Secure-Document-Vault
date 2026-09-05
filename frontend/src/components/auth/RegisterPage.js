@@ -100,6 +100,9 @@ function RegisterPage() {
     variant: 'outlined',
     error: !!errors[name],
     helperText: errors[name],
+    autoCapitalize: 'none',
+    autoCorrect: 'off',
+    spellCheck: false,
     InputProps: {
       startAdornment: (
         <InputAdornment position="start">{icon}</InputAdornment>
@@ -124,7 +127,16 @@ function RegisterPage() {
 
           {generalError && <Alert severity="error" sx={{ mb: 2, borderRadius: 3 }}>{generalError}</Alert>}
           {!generalError && Object.keys(errors).length > 0 && (
-            <Alert severity="error" sx={{ mb: 2, borderRadius: 3 }}>يرجى مراجعة الحقول المحددة</Alert>
+            <Alert severity="error" sx={{ mb: 2, borderRadius: 3 }}>
+              <div style={{ fontWeight: 700 }}>يرجى مراجعة الحقول التالية:</div>
+              <ul style={{ margin: '6px 0 0 0', paddingLeft: 18 }}>
+                {Object.entries(errors).map(([k, v]) => (
+                  <li key={k} style={{ fontSize: 13 }}>
+                    {typeof v === 'string' ? v : JSON.stringify(v)}
+                  </li>
+                ))}
+              </ul>
+            </Alert>
           )}
 
           <form onSubmit={handleSubmit}>
