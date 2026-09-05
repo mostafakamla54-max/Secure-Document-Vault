@@ -25,6 +25,15 @@ import { authService } from '../../services/authService';
 
 const drawerWidth = 250;
 
+const sparkles = [
+  { icon: '⭐', top: 6, left: 14, d: '0s' },
+  { icon: '✨', top: 16, left: 78, d: '1.2s' },
+  { icon: '🌠', top: 78, left: 30, d: '2.1s' },
+  { icon: '🌟', top: 88, left: 85, d: '0.8s' },
+  { icon: '💫', top: 40, left: 4, d: '1.7s' },
+  { icon: '⭐', top: 60, left: 96, d: '2.6s' },
+];
+
 const SearchBox = styled(Box)({
   display: 'flex',
   alignItems: 'center',
@@ -110,8 +119,19 @@ function Layout({ children }) {
   const initials = (user && (user.first_name?.[0] || user.username?.[0])) || 'U';
 
   return (
-    <Box className="layout-app" sx={{ display: 'flex', minHeight: '100vh', background: 'linear-gradient(135deg, #ffffff, #e0f2ff 20%, #f3e8ff 50%, #e0fff4 80%, #fff0f6 100%)', backgroundSize: '300% 300%', animation: 'gradient-move 18s ease infinite', position: 'relative' }}>
-      <Box position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, width: '100%', background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(16px)', borderBottom: '1px solid #edf2f7', boxShadow: '0 2px 12px rgba(74,144,217,0.08)' }}>
+    <Box className="layout-app lux-inner" sx={{ display: 'flex', minHeight: '100vh', background: 'linear-gradient(135deg, #ffffff, #e0f2ff 20%, #f3e8ff 50%, #e0fff4 80%, #fff0f6 100%)', backgroundSize: '300% 300%', animation: 'gradient-move 18s ease infinite', position: 'relative' }}>
+      <Box className="dash-bg" sx={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }} aria-hidden="true" />
+      <Box className="dash-bg-orbs" sx={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }} aria-hidden="true" />
+      <Box className="dash-particles" sx={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }} aria-hidden="true" />
+      <Box className="dash-waves" sx={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }} aria-hidden="true" />
+      <Box className="dash-sparkles" sx={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }} aria-hidden="true">
+        {sparkles.map((s, i) => (
+          <Box key={i} sx={{ position: 'absolute', top: `${s.top}%`, left: `${s.left}%`, animationDelay: s.d }} className="dash-spark">
+            {s.icon}
+          </Box>
+        ))}
+      </Box>
+      <Box className="lux-topbar" position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, width: '100%', background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(16px)', borderBottom: '1px solid #edf2f7', boxShadow: '0 2px 12px rgba(74,144,217,0.08)' }}>
         <Toolbar>
           <IconButton color="inherit" edge="start" onClick={() => setOpen(!open)} sx={{ mr: 2, display: { md: 'none' }, color: '#4a90d9' }}>
             <MenuIcon />
@@ -123,7 +143,7 @@ function Layout({ children }) {
           <Box sx={{ display: { xs: 'none', md: 'block' }, mr: 2 }}>
             <ClickAwayListener onClickAway={() => setSearchAnchor(null)}>
               <Box>
-                <SearchBox>
+                <SearchBox className="lux-search">
                   <SearchIcon sx={{ color: '#a0aec0', mr: 1 }} />
                   <InputBase placeholder={t('\u0628\u062D\u062B \u0633\u0631\u064A\u0639 \u0641\u064A \u0627\u0644\u0648\u062B\u0627\u0626\u0642...', 'Quick document search...')} value={search} onChange={(e) => { setSearch(e.target.value); setSearchAnchor(e.currentTarget.closest('div')); }} onKeyDown={handleSearchKey} onClick={(e) => setSearchAnchor(e.currentTarget.closest('div'))} sx={{ fontSize: 14, color: '#2d3748', flex: 1 }} />
                 </SearchBox>
@@ -194,7 +214,7 @@ function Layout({ children }) {
         </List>
       </Drawer>
 
-      <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 8 }}>{children}</Box>
+      <Box component="main" className="layout-main" sx={{ flexGrow: 1, p: 3, mt: 8, position: 'relative', zIndex: 1 }}>{children}</Box>
     </Box>
   );
 }

@@ -507,3 +507,883 @@ body.dark .MuiDataGrid-cell {
 ::-webkit-scrollbar-track {
   background: #0f172a;
 }
+
+/* ==============================================
+   👑 SECURE VAULT - LUXURY GOLD AUTH (واجهات فاخرة ذهبية)
+   ============================================== */
+
+.background-gold {
+  background:
+    radial-gradient(circle at 20% 10%, rgba(212, 175, 55, 0.20), transparent 45%),
+    radial-gradient(circle at 85% 85%, rgba(212, 175, 55, 0.14), transparent 45%),
+    linear-gradient(135deg, #0a0a2a, #14103a 45%, #1a0a2a) !important;
+  background-size: 300% 300%;
+  animation: lux-gradient-shift 16s ease infinite;
+}
+
+@keyframes lux-gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.background-gold .orb-1 { background: rgba(212, 175, 55, 0.14); filter: blur(120px); }
+.background-gold .orb-2 { background: rgba(180, 135, 40, 0.10); filter: blur(110px); }
+.background-gold .orb-3 { background: rgba(124, 58, 237, 0.16); filter: blur(130px); }
+
+.background-gold .gold-particle {
+  position: absolute;
+  background: radial-gradient(circle, #ffd700, #d4af37);
+  border-radius: 50%;
+  opacity: 0;
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
+  animation: float-particle linear infinite;
+}
+
+.background-gold .gold-star {
+  position: absolute;
+  background: #ffd700;
+  border-radius: 50%;
+  opacity: 0;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.9);
+  animation: gold-twinkle ease-in-out infinite;
+}
+
+@keyframes gold-twinkle {
+  0%, 100% { opacity: 0.15; transform: scale(0.8); }
+  50% { opacity: 0.95; transform: scale(1.25); }
+}
+
+.background-gold .gold-ring,
+.background-gold .gold-ring-2 {
+  position: absolute;
+  border-radius: 50%;
+  animation: gold-ring-pulse ease-in-out infinite;
+}
+
+.background-gold .gold-ring { border: 2px solid rgba(212, 175, 55, 0.45); }
+.background-gold .gold-ring-2 { border: 2px dashed rgba(212, 175, 55, 0.35); }
+
+@keyframes gold-ring-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.20; }
+  50% { transform: scale(1.12); opacity: 0.55; }
+}
+
+.background-gold .gold-wave {
+  position: absolute;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.35), transparent);
+  animation: gold-wave-drift 12s ease-in-out infinite;
+}
+
+@keyframes gold-wave-drift {
+  0%, 100% { transform: translateX(-15%); opacity: 0.25; }
+  50% { transform: translateX(15%); opacity: 0.6; }
+}
+
+.background-gold .gold-emblem {
+  position: absolute;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0.30;
+  filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.45)) drop-shadow(0 0 22px rgba(212, 175, 55, 0.25));
+  animation: lux-emblem-float ease-in-out infinite;
+}
+
+@keyframes lux-emblem-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33% { transform: translateY(-26px) rotate(6deg); }
+  66% { transform: translateY(14px) rotate(-6deg); }
+}
+
+.auth-page.lux-auth-page {
+  background: linear-gradient(135deg, #0a0a2a, #14103a 45%, #1a0a2a);
+  background-size: 300% 300%;
+  animation: lux-gradient-shift 16s ease infinite;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.auth-page.lux-auth-page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(212, 175, 55, 0.16), transparent 45%),
+    radial-gradient(circle at 85% 80%, rgba(255, 215, 0, 0.10), transparent 40%),
+    radial-gradient(circle at 50% 0%, rgba(124, 58, 237, 0.18), transparent 50%);
+  animation: lux-halo-float 18s ease-in-out infinite;
+}
+
+@keyframes lux-halo-float {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 1; }
+}
+
+.lux-card {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(26px);
+  -webkit-backdrop-filter: blur(26px);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 26px;
+  padding: 42px 38px;
+  box-shadow:
+    0 0 0 1px rgba(212, 175, 55, 0.08),
+    0 20px 60px rgba(0, 0, 0, 0.5),
+    0 0 40px rgba(212, 175, 55, 0.12);
+  animation: lux-fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1), lux-card-glow 4s ease-in-out infinite;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.lux-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #ffd700, transparent);
+  border-radius: 999px;
+}
+
+@keyframes lux-fade-up {
+  from { opacity: 0; transform: translateY(34px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes lux-card-glow {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.08), 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(212, 175, 55, 0.12); }
+  50% { box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.18), 0 20px 60px rgba(0, 0, 0, 0.55), 0 0 70px rgba(212, 175, 55, 0.22); }
+}
+
+.lux-brand { text-align: center; margin-bottom: 8px; }
+
+.lux-brand-icon {
+  font-size: 42px;
+  display: inline-block;
+  filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.55));
+  animation: lux-float 4s ease-in-out infinite;
+}
+
+@keyframes lux-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+
+.lux-brand-title {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  background: linear-gradient(135deg, #ffd700, #d4af37 45%, #f6e27a 55%, #d4af37);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 14px rgba(255, 215, 0, 0.35));
+  animation: lux-logo-glow 3s ease-in-out infinite;
+}
+
+@keyframes lux-logo-glow {
+  0%, 100% { filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.3)); }
+  50% { filter: drop-shadow(0 0 22px rgba(255, 215, 0, 0.65)); }
+}
+
+.lux-brand-sub {
+  color: #f0d060;
+  font-size: 11.5px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.lux-title {
+  text-align: center;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 26px;
+  margin: 18px 0 4px;
+}
+
+.lux-subtitle {
+  text-align: center;
+  color: #f0d060;
+  font-size: 13.5px;
+  margin-bottom: 26px;
+}
+
+.lux-card .auth-field { margin-bottom: 16px; }
+
+.lux-card .auth-field label {
+  color: #f0d060;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.lux-card .MuiInputBase-root,
+.lux-card .MuiOutlinedInput-root {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 14px;
+  color: #ffffff;
+  transition: all 0.3s ease;
+}
+
+.lux-card .MuiOutlinedInput-root fieldset {
+  border-color: rgba(212, 175, 55, 0.30);
+}
+
+.lux-card .MuiOutlinedInput-root:hover fieldset {
+  border-color: rgba(255, 215, 0, 0.65);
+}
+
+.lux-card .MuiOutlinedInput-root.Mui-focused fieldset {
+  border-color: #ffd700;
+  box-shadow: 0 0 18px rgba(255, 215, 0, 0.28);
+}
+
+.lux-card .MuiInputLabel-root,
+.lux-card .MuiInputLabel-shrink {
+  color: #cbb26a !important;
+}
+
+.lux-card .MuiOutlinedInput-input {
+  color: #ffffff;
+}
+
+.lux-card .MuiInputAdornment-root svg {
+  color: #d4af37 !important;
+  animation: lux-icon-bob 3.2s ease-in-out infinite;
+}
+
+@keyframes lux-icon-bob {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-2.5px) scale(1.07); filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.7)); }
+}
+
+.lux-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 2px 0 18px;
+  font-size: 13px;
+  color: #cbb26a;
+}
+
+.lux-row label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.lux-row .lux-forgot {
+  color: #f0d060;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.lux-row .lux-forgot:hover { color: #fff; text-shadow: 0 0 10px rgba(255, 215, 0, 0.8); }
+
+.lux-btn,
+.lux-card .MuiButton-contained {
+  background: linear-gradient(135deg, #d4af37, #ff8c00) !important;
+  border-radius: 50px !important;
+  padding: 13px 38px !important;
+  color: #1a0a2a !important;
+  font-weight: 800 !important;
+  font-size: 16px !important;
+  box-shadow: 0 4px 20px rgba(255, 140, 0, 0.4), 0 0 30px rgba(212, 175, 55, 0.25) !important;
+  transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+  animation: lux-btn-pulse 2.2s infinite;
+}
+
+.lux-btn:hover,
+.lux-card .MuiButton-contained:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 30px rgba(255, 140, 0, 0.55), 0 0 45px rgba(212, 175, 55, 0.4) !important;
+}
+
+.lux-btn:disabled,
+.lux-card .MuiButton-contained:disabled {
+  background: linear-gradient(135deg, #8a7430, #a8661e) !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+  box-shadow: none !important;
+}
+
+@keyframes lux-btn-pulse {
+  0%, 100% { box-shadow: 0 4px 20px rgba(255, 140, 0, 0.4), 0 0 0 0 rgba(255, 215, 0, 0.35); }
+  70% { box-shadow: 0 4px 20px rgba(255, 140, 0, 0.4), 0 0 0 16px rgba(255, 215, 0, 0); }
+}
+
+.lux-link {
+  color: #ffd700 !important;
+  font-weight: 800;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+.lux-link:hover {
+  color: #ffffff !important;
+  text-shadow: 0 0 12px rgba(255, 215, 0, 0.8);
+}
+
+.lux-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 22px 0 16px;
+  color: #7f8db0;
+  font-size: 12px;
+}
+
+.lux-divider::before,
+.lux-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.4), transparent);
+}
+
+.lux-social { display: flex; gap: 12px; }
+
+.lux-social .MuiButton-root {
+  flex: 1;
+  border-radius: 14px !important;
+  color: #e8e8f0 !important;
+  border: 1px solid rgba(212, 175, 55, 0.25) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  text-transform: none !important;
+  font-weight: 600 !important;
+  padding: 11px !important;
+}
+
+.lux-social .MuiButton-root svg { color: #ffd700; }
+
+.lux-security {
+  text-align: center;
+  color: #cbb26a;
+  font-size: 12px;
+  margin-top: 20px;
+  font-weight: 600;
+}
+
+/* ==============================================
+   👑 VAULT LUXURY INNER (الواجهة الداخلية الذهبية)
+   مقيّد على body.vault-lux حتى لا يمسّ أي صفحة خارجية
+   ============================================== */
+
+body.vault-lux .layout-app.layout-app {
+  background:
+    radial-gradient(circle at 18% 15%, rgba(212, 175, 55, 0.12), transparent 42%),
+    radial-gradient(circle at 85% 85%, rgba(212, 175, 55, 0.10), transparent 45%),
+    linear-gradient(135deg, #0a0a2a, #14103a 40%, #1a0a2a 70%, #0d0a30) !important;
+  background-size: 300% 300%;
+  animation: lux-gradient-shift 18s ease infinite;
+}
+
+body.vault-lux .layout-main {
+  position: relative;
+  z-index: 1;
+}
+
+body.vault-lux .MuiBox-root {
+  background: transparent !important;
+}
+
+body.vault-lux .lux-topbar {
+  background: rgba(10, 10, 42, 0.88) !important;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.30) !important;
+  box-shadow: 0 2px 18px rgba(0, 0, 0, 0.45) !important;
+}
+
+body.vault-lux .lux-topbar .MuiTypography-root {
+  color: #ffd700 !important;
+  text-shadow: 0 0 14px rgba(255, 215, 0, 0.35);
+}
+
+body.vault-lux .lux-topbar .MuiIconButton-root { color: #f0d060 !important; }
+
+body.vault-lux .lux-topbar .MuiAvatar-root {
+  background: linear-gradient(135deg, #d4af37, #ff8c00) !important;
+  color: #1a0a2a !important;
+}
+
+body.vault-lux .lux-search {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(212, 175, 55, 0.30) !important;
+  box-shadow: none !important;
+}
+
+body.vault-lux .lux-search .MuiInputBase-root { color: #f0d060 !important; }
+
+body.vault-lux .layout-sidebar .MuiDrawer-paper {
+  background: rgba(10, 10, 42, 0.92) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-right: 1px solid rgba(212, 175, 55, 0.22) !important;
+  color: #e8e8f0;
+}
+
+body.vault-lux .layout-sidebar .MuiListItemButton-root {
+  color: #cfd3ea !important;
+  transition: all 0.3s ease;
+}
+
+body.vault-lux .layout-sidebar .MuiListItemButton-root:hover {
+  background: rgba(212, 175, 55, 0.12) !important;
+  color: #ffd700 !important;
+}
+
+body.vault-lux .layout-sidebar .MuiListItemButton-root.Mui-selected {
+  background: linear-gradient(135deg, #d4af37, #ff8c00) !important;
+  color: #1a0a2a !important;
+  box-shadow: 0 4px 16px rgba(255, 140, 0, 0.35) !important;
+}
+
+body.vault-lux .layout-sidebar .MuiListItemButton-root.Mui-selected .MuiListItemIcon-root { color: #1a0a2a !important; }
+body.vault-lux .layout-sidebar .MuiListItemIcon-root { color: #d4af37 !important; }
+
+body.vault-lux .page-title {
+  background: linear-gradient(135deg, #ffd700, #f0d060 45%, #d4af37 60%, #ffd700) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-color: transparent !important;
+  filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.25));
+}
+
+body.vault-lux { color: #e8e8f0; }
+
+body.vault-lux .MuiTypography-root { color: #e8e8f0 !important; }
+
+body.vault-lux .MuiPaper-root {
+  background: rgba(255, 255, 255, 0.05) !important;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(212, 175, 55, 0.22) !important;
+  color: #e8e8f0;
+}
+
+body.vault-lux .glass-card,
+body.vault-lux .doc-card,
+body.vault-lux .stat-card {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(212, 175, 55, 0.22) !important;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+body.vault-lux .stat-card { border-top: 3px solid #d4af37 !important; }
+
+body.vault-lux .MuiDataGrid-root {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(212, 175, 55, 0.20) !important;
+}
+
+body.vault-lux .MuiDataGrid-columnHeaders {
+  background: rgba(255, 215, 0, 0.07) !important;
+  color: #ffd700 !important;
+  font-weight: 700;
+}
+
+body.vault-lux .MuiDataGrid-cell,
+body.vault-lux .MuiDataGrid-cell.MuiDataGrid-cell--textLeft,
+body.vault-lux .MuiDataGrid-cell.MuiDataGrid-cell--textRight {
+  color: #e8e8f0 !important;
+}
+
+body.vault-lux .MuiDataGrid-row:hover { background: rgba(212, 175, 55, 0.08) !important; }
+
+body.vault-lux .MuiDataGrid-footerContainer {
+  background: rgba(255, 255, 255, 0.03) !important;
+  color: #cbb26a !important;
+}
+
+body.vault-lux .MuiTablePagination-root { color: #cbb26a !important; }
+
+body.vault-lux .MuiDialog-paper {
+  background: rgba(13, 10, 42, 0.97) !important;
+  border: 1px solid rgba(212, 175, 55, 0.30) !important;
+}
+
+body.vault-lux .MuiDialogTitle-root { color: #ffd700 !important; }
+body.vault-lux .MuiDialogContent-root { color: #e8e8f0 !important; }
+
+body.vault-lux .MuiOutlinedInput-root {
+  background: rgba(255, 255, 255, 0.04) !important;
+  color: #ffffff !important;
+}
+
+body.vault-lux .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline {
+  border-color: rgba(212, 175, 55, 0.30) !important;
+}
+
+body.vault-lux .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: rgba(255, 215, 0, 0.6) !important;
+}
+
+body.vault-lux .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #ffd700 !important;
+  box-shadow: 0 0 16px rgba(255, 215, 0, 0.22);
+}
+
+body.vault-lux .MuiInputLabel-root { color: #cbb26a !important; }
+
+body.vault-lux .MuiTab-root { color: #cbb26a !important; font-weight: 700; }
+body.vault-lux .Mui-selected.MuiTab-root { color: #ffd700 !important; }
+body.vault-lux .MuiTabs-indicator { background: linear-gradient(90deg, #d4af37, #ff8c00) !important; }
+
+body.vault-lux .btn-primary,
+body.vault-lux .MuiButton-contained {
+  background: linear-gradient(135deg, #d4af37, #ff8c00) !important;
+  color: #1a0a2a !important;
+  box-shadow: 0 4px 18px rgba(255, 140, 0, 0.35) !important;
+}
+
+body.vault-lux .btn-primary:hover,
+body.vault-lux .MuiButton-contained:hover {
+  box-shadow: 0 8px 28px rgba(255, 140, 0, 0.5) !important;
+}
+
+body.vault-lux .lux-dlg.MuiDialogContent-root,
+body.vault-lux .lux-dlg.MuiDialogActions-root,
+body.vault-lux .MuiDialogContent-root,
+body.vault-lux .MuiDialogActions-root {
+  background: transparent !important;
+}
+
+body.vault-lux .lux-code {
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: #f0d060 !important;
+  border-color: rgba(212, 175, 55, 0.35) !important;
+}
+
+body.vault-lux .lux-dec {
+  background: rgba(0, 184, 148, 0.08) !important;
+  border-color: rgba(212, 175, 55, 0.30) !important;
+}
+
+body.vault-lux .lux-ai {
+  background: rgba(124, 109, 240, 0.10) !important;
+  border-color: rgba(212, 175, 55, 0.30) !important;
+}
+
+body.vault-lux .lux-chip {
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: #f0d060 !important;
+  border-color: rgba(212, 175, 55, 0.40) !important;
+}
+
+body.vault-lux .MuiAlert-root {
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: #fff !important;
+}
+
+body.vault-lux .MuiMenu-paper {
+  background: rgba(13, 10, 42, 0.98) !important;
+  border: 1px solid rgba(212, 175, 55, 0.25) !important;
+}
+
+body.vault-lux .doc-encrypted {
+  color: #ffd700;
+  border-color: rgba(212, 175, 55, 0.5);
+  background: rgba(212, 175, 55, 0.10);
+}
+
+body.vault-lux ::-webkit-scrollbar-thumb {
+  background: linear-gradient(#d4af37, #ff8c00) !important;
+}
+
+/* ==============================================
+   🌌 DASHBOARD ANIMATED LUXURY (يقتصر على لوحة التحكم)
+   ============================================== */
+
+body.vault-lux .dash-lux {
+  position: relative;
+  z-index: 1;
+}
+
+/* --- الخلفية: رقصة الألوان --- */
+body.vault-lux .dash-bg {
+  background:
+    radial-gradient(circle at 22% 18%, rgba(0, 212, 255, 0.16), transparent 42%),
+    radial-gradient(circle at 80% 72%, rgba(123, 47, 252, 0.22), transparent 45%),
+    radial-gradient(circle at 50% 90%, rgba(212, 175, 55, 0.10), transparent 40%),
+    linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #1a1a2e);
+  background-size: 130% 130%, 130% 130%, 130% 130%, 400% 400%;
+  animation: dash-bg-swirl 16s ease-in-out infinite;
+  overflow: hidden;
+}
+
+@keyframes dash-bg-swirl {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+body.vault-lux .dash-bg-orbs {
+  overflow: hidden;
+}
+
+body.vault-lux .dash-bg-orbs::before,
+body.vault-lux .dash-bg-orbs::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.55;
+}
+
+body.vault-lux .dash-bg-orbs::before {
+  width: 520px;
+  height: 520px;
+  background: rgba(0, 212, 255, 0.20);
+  top: -120px;
+  left: -120px;
+  animation: dash-orb 18s ease-in-out infinite;
+}
+
+body.vault-lux .dash-bg-orbs::after {
+  width: 460px;
+  height: 460px;
+  background: rgba(255, 140, 0, 0.16);
+  bottom: -140px;
+  right: -100px;
+  animation: dash-orb 24s ease-in-out infinite reverse;
+}
+
+@keyframes dash-orb {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(60px, -40px) scale(1.15); }
+}
+
+/* --- جسيمات ذهبية وفضية (نجوم بعيدة) --- */
+body.vault-lux .dash-particles {
+  background-image:
+    radial-gradient(circle, rgba(212, 175, 55, 0.95) 1.6px, transparent 2.2px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.85) 1.2px, transparent 1.8px),
+    radial-gradient(circle, rgba(192, 192, 192, 0.6) 1.4px, transparent 2px);
+  background-size: 230px 230px, 330px 330px, 190px 190px;
+  background-position: 0 0, 45px 65px, 95px 35px;
+  animation: dash-parts 70s linear infinite;
+  overflow: hidden;
+}
+
+@keyframes dash-parts {
+  0% { background-position: 0 0, 45px 65px, 95px 35px; }
+  100% { background-position: -230px 230px, -330px -330px, -190px 190px; }
+}
+
+/* --- موجات ضوئية ناعمة --- */
+body.vault-lux .dash-waves {
+  overflow: hidden;
+}
+
+body.vault-lux .dash-waves::before,
+body.vault-lux .dash-waves::after {
+  content: '';
+  position: absolute;
+  width: 190%;
+  border-radius: 50%;
+  height: 130px;
+}
+
+body.vault-lux .dash-waves::before {
+  top: 16%;
+  left: -70%;
+  background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.12), transparent);
+  animation: dash-wave 14s linear infinite;
+}
+
+body.vault-lux .dash-waves::after {
+  top: 58%;
+  left: -90%;
+  height: 90px;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.10), transparent);
+  animation: dash-wave 19s linear infinite reverse;
+}
+
+@keyframes dash-wave {
+  0% { transform: translateX(0); opacity: 0.25; }
+  50% { opacity: 0.85; }
+  100% { transform: translateX(80%); opacity: 0.25; }
+}
+
+/* --- نجوم ذهبية طافئة --- */
+body.vault-lux .dash-sparkles {
+  overflow: hidden;
+}
+
+body.vault-lux .dash-spark {
+  font-size: 24px;
+  opacity: 0.4;
+  animation: dash-float 6s ease-in-out infinite;
+  filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
+}
+
+@keyframes dash-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-18px) rotate(14deg); }
+}
+
+/* --- بطاقات زجاجية متوهجة --- */
+body.vault-lux .dash-card {
+  background: rgba(255, 255, 255, 0.06) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(212, 175, 55, 0.55) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.10) !important;
+  isolation: isolate;
+  position: relative;
+  transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease !important;
+}
+
+body.vault-lux .dash-card::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  z-index: -1;
+  border-radius: 22px;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.55), rgba(0, 212, 255, 0.35), rgba(212, 175, 55, 0.55));
+  filter: blur(16px);
+  opacity: 0.6;
+  animation: dash-glow 5s ease-in-out infinite;
+}
+
+@keyframes dash-glow {
+  0%, 100% { opacity: 0.45; filter: blur(18px); }
+  50% { opacity: 0.85; filter: blur(12px); }
+}
+
+body.vault-lux .dash-card:hover {
+  transform: translateY(-8px) scale(1.03) !important;
+  border-color: rgba(212, 175, 55, 0.9) !important;
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.5), 0 0 24px rgba(212, 175, 55, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+}
+
+body.vault-lux .dash-card:hover::before {
+  animation-play-state: paused;
+  opacity: 1;
+  filter: blur(10px);
+}
+
+/* --- النصوص --- */
+body.vault-lux .dash-lux .dash-title {
+  color: #f0d060 !important;
+  text-shadow: 0 2px 20px rgba(240, 208, 96, 0.5);
+}
+
+body.vault-lux .dash-lux .dash-title-sm {
+  color: #f0d060 !important;
+  text-shadow: 0 2px 14px rgba(240, 208, 96, 0.4);
+}
+
+body.vault-lux .dash-lux .dash-stat {
+  color: #00d4ff !important;
+  text-shadow: 0 0 18px rgba(0, 212, 255, 0.6);
+}
+
+body.vault-lux .dash-lux .dash-label,
+body.vault-lux .dash-lux .dash-doc {
+  color: #ffffff !important;
+}
+
+body.vault-lux .dash-lux .dash-chip {
+  color: #f0d060 !important;
+  border-color: rgba(212, 175, 55, 0.55) !important;
+  background: rgba(212, 175, 55, 0.12) !important;
+  font-weight: 700;
+}
+
+body.vault-lux .dash-lux .dash-spin {
+  color: #00d4ff !important;
+}
+
+/* --- الزر الرئيسي: نيون أزرق-بنفسجي نابض --- */
+body.vault-lux .dash-lux .dash-btn-primary {
+  background: linear-gradient(135deg, #00d4ff, #7b2ffc) !important;
+  color: #ffffff !important;
+  border-radius: 50px !important;
+  font-weight: 800 !important;
+  padding: 12px 30px !important;
+  box-shadow: 0 8px 26px rgba(0, 212, 255, 0.35) !important;
+  animation: dash-btn-pulse 2.2s ease-in-out infinite;
+}
+
+@keyframes dash-btn-pulse {
+  0%, 100% { box-shadow: 0 8px 26px rgba(0, 212, 255, 0.35); }
+  50% { box-shadow: 0 12px 38px rgba(123, 47, 252, 0.6); }
+}
+
+body.vault-lux .dash-lux .dash-btn-primary:hover {
+  transform: translateY(-2px);
+}
+
+/* --- ظهور تدريجي --- */
+body.vault-lux .dash-fade {
+  animation: dash-fade-up 0.7s ease-out both;
+}
+
+@keyframes dash-fade-up {
+  0% { opacity: 0; transform: translateY(18px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ==============================================
+   🧵 رتق الأسطح البيضاء المتبقية (داخل التطبيق)
+   ============================================== */
+
+body.vault-lux .MuiDialogTitle-root {
+  background: linear-gradient(135deg, #14103a, #1a0a2a) !important;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.30) !important;
+  color: #ffd700 !important;
+}
+
+body.vault-lux .MuiDialogContent-root {
+  color: #e8e8f0 !important;
+}
+
+body.vault-lux .MuiDivider-root {
+  border-color: rgba(212, 175, 55, 0.20) !important;
+}
+
+body.vault-lux .MuiChip-root {
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: #f0d060 !important;
+  border-color: rgba(212, 175, 55, 0.45) !important;
+  font-weight: 700;
+}
+
+body.vault-lux .MuiBox-root {
+  border-color: rgba(212, 175, 55, 0.22) !important;
+}
+
+body.vault-lux .MuiTypography-h4,
+body.vault-lux .MuiTypography-h5 {
+  color: #ffd700 !important;
+  text-shadow: 0 2px 14px rgba(240, 208, 96, 0.35);
+}
+
+body.vault-lux .MuiSelect-icon {
+  color: #f0d060 !important;
+}
+
+body.vault-lux .MuiInputBase-input,
+body.vault-lux .MuiOutlinedInput-input {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff;
+}
+
+body.vault-lux .MuiOutlinedInput-root.Mui-disabled .MuiOutlinedInput-notchedOutline {
+  border-color: rgba(212, 175, 55, 0.25) !important;
+}
+
+body.vault-lux .MuiOutlinedInput-root.Mui-disabled input {
+  color: #cbb26a !important;
+  -webkit-text-fill-color: #cbb26a;
+}

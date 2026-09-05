@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchDocuments, uploadDocument, deleteDocument } from '../../store/slices/documentSlice';
 import { documentService } from '../../services/documentService';
 import ShareModal from '../sharing/ShareModal';
+import EncryptedContentModal from './EncryptedContentModal';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -24,6 +25,7 @@ import VideoIcon from '@mui/icons-material/VideoLibrary';
 import TableIcon from '@mui/icons-material/TableChart';
 import SlideshowIcon from '@mui/icons-material/Slideshow';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
+import LockIcon from '@mui/icons-material/Lock';
 
 function typeIcon(ext, mime) {
   const e = (ext || '').toLowerCase();
@@ -59,6 +61,7 @@ function DocumentListPage() {
   const [mode, setMode] = React.useState('file');
   const [uploadForm, setUploadForm] = React.useState({ file: null, title: '', category: 'general', importance: 'normal', description: '' });
   const [shareDoc, setShareDoc] = React.useState(null);
+  const [encDocId, setEncDocId] = React.useState(null);
 
   React.useEffect(() => {
     dispatch(fetchDocuments(filters));
@@ -89,6 +92,7 @@ function DocumentListPage() {
       }
       const result = await dispatch(uploadDocument(payload));
       if (result.type === 'documents/upload/fulfilled') {
+        const createdId = result.payload && (result.payload.id ?? result.payload.id);
         setUploadStatus('success');
         setStatusMsg(mode === 'file' ? '✅ تم رفع الوثيقة وتشفيرها بـ AES-256-GCM' : '✅ تم حفظ الرابط وتشفيره');
         setTimeout(() => {
@@ -96,7 +100,8 @@ function DocumentListPage() {
           setUploadStatus('');
           setStatusMsg('');
           setUploadForm({ file: null, title: '', category: 'general', importance: 'normal', description: '' });
-        }, 1400);
+          if (createdId) setEncDocId(createdId);
+        }, 700);
       } else {
         setUploadStatus('error');
         setStatusMsg('⚠️ حدث خطأ أثناء الرفع');
@@ -164,11 +169,12 @@ function DocumentListPage() {
     {
       field: 'actions',
       headerName: 'إجراءات',
-      width: 250,
+      width: 300,
       sortable: false,
       renderCell: (params) => (
         <Box sx={{ display: 'flex', gap: 0.5 }}>
           <Button size="small" onClick={() => navigate(`/documents/${params.row.id}`)} startIcon={<VisibilityIcon />} sx={{ color: '#4a90d9', fontWeight: 700 }}>عرض</Button>
+          <Button size="small" onClick={() => setEncDocId(params.row.id)} startIcon={<LockIcon />} sx={{ color: '#b7791f', fontWeight: 700 }}>النص المشفر</Button>
           {(params.row.original_extension !== 'link') && (
             <Button size="small" onClick={() => handleDownload(params.row)} startIcon={<DownloadIcon />} sx={{ color: '#2ecc71', fontWeight: 700 }}>تحميل</Button>
           )}
@@ -332,6 +338,7 @@ function DocumentListPage() {
       </Dialog>
 
       <ShareModal open={!!shareDoc} onClose={() => setShareDoc(null)} document={shareDoc} />
+      <EncryptedContentModal docId={encDocId} open={!!encDocId} onClose={() => setEncDocId(null)} />
     </Layout>
   );
 }

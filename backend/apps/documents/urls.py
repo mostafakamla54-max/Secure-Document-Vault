@@ -10,7 +10,9 @@ from .admin_views import (
 )
 from .views import (
     DocumentAiAnalyzeView,
+    DocumentDecryptTextView,
     DocumentDownloadView,
+    DocumentEncryptedTextView,
     DocumentTagViewSet,
     DocumentVersionViewSet,
     DocumentViewSet,
@@ -25,6 +27,8 @@ router.register(r'tags', DocumentTagViewSet, basename='tags')
 
 urlpatterns = [
     path('download/<int:pk>/', DocumentDownloadView.as_view(), name='document-download'),
+    path('encrypted-text/<int:pk>/', DocumentEncryptedTextView.as_view(), name='document-encrypted-text'),
+    path('decrypt-text/<int:pk>/', DocumentDecryptTextView.as_view(), name='document-decrypt-text'),
     path('favorite/<int:pk>/', ToggleFavoriteView.as_view(), name='document-favorite'),
     path('archive/<int:pk>/', ToggleArchiveView.as_view(), name='document-archive'),
     path('trash/', TrashView.as_view(), name='trash-list'),

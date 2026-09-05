@@ -1,6 +1,7 @@
 import React from 'react';
 
-function AnimatedBackground() {
+function AnimatedBackground({ variant = 'light' }) {
+  const isGold = variant === 'gold';
   const particles = React.useMemo(() => {
     return Array.from({ length: 30 }, (_, i) => ({
       id: i,
@@ -43,8 +44,18 @@ function AnimatedBackground() {
     }));
   }, []);
 
+  const emblems = React.useMemo(() => {
+    return [
+      { id: 600, icon: '🛡️', left: 8, top: 18, size: 30, delay: 0, duration: 26 },
+      { id: 601, icon: '🔒', left: 84, top: 12, size: 24, delay: 3, duration: 22 },
+      { id: 602, icon: '🔐', left: 90, top: 78, size: 28, delay: 6, duration: 28 },
+      { id: 603, icon: '🛡️', left: 10, top: 80, size: 26, delay: 9, duration: 24 },
+      { id: 604, icon: '💠', left: 50, top: 52, size: 20, delay: 5, duration: 30 },
+    ];
+  }, []);
+
   return (
-    <div className="background-animated" aria-hidden="true">
+    <div className={`background-animated ${isGold ? 'background-gold' : ''}`} aria-hidden="true">
       <div className="orb orb-1" />
       <div className="orb orb-2" />
       <div className="orb orb-3" />
@@ -52,7 +63,7 @@ function AnimatedBackground() {
       {stars.map((s) => (
         <span
           key={s.id}
-          className="magic-star"
+          className={isGold ? 'gold-star' : 'magic-star'}
           style={{
             left: `${s.left}%`,
             top: `${s.top}%`,
@@ -67,7 +78,7 @@ function AnimatedBackground() {
       {rings.map((r) => (
         <span
           key={r.id}
-          className={r.dashed ? 'magic-ring-2' : 'magic-ring'}
+          className={isGold ? (r.dashed ? 'gold-ring-2' : 'gold-ring') : (r.dashed ? 'magic-ring-2' : 'magic-ring')}
           style={{
             left: `${r.left}%`,
             top: `${r.top}%`,
@@ -82,7 +93,7 @@ function AnimatedBackground() {
       {waves.map((w) => (
         <span
           key={w.id}
-          className="magic-wave"
+          className={isGold ? 'gold-wave' : 'magic-wave'}
           style={{
             left: 0,
             top: `${w.top}%`,
@@ -96,7 +107,7 @@ function AnimatedBackground() {
       {particles.map((p) => (
         <span
           key={p.id}
-          className="particle-dot"
+          className={isGold ? 'gold-particle' : 'particle-dot'}
           style={{
             left: `${p.left}%`,
             bottom: '-10px',
@@ -108,15 +119,35 @@ function AnimatedBackground() {
         />
       ))}
 
+      {isGold && emblems.map((em) => (
+        <span
+          key={em.id}
+          className="gold-emblem"
+          style={{
+            left: `${em.left}%`,
+            top: `${em.top}%`,
+            fontSize: `${em.size}px`,
+            animationDelay: `${em.delay}s`,
+            animationDuration: `${em.duration}s`,
+          }}
+        >
+          {em.icon}
+        </span>
+      ))}
+
       <div
         style={{
           position: 'absolute',
           inset: 0,
-          background:
-            'radial-gradient(circle at 20% 20%, rgba(0,210,255,0.14), transparent 40%), ' +
-            'radial-gradient(circle at 80% 80%, rgba(118,75,162,0.14), transparent 40%), ' +
-            'radial-gradient(circle at 50% 100%, rgba(240,147,251,0.14), transparent 45%), ' +
-            'radial-gradient(circle at 70% 30%, rgba(0,245,160,0.12), transparent 40%)',
+          background: isGold
+            ? 'radial-gradient(circle at 20% 20%, rgba(212,175,55,0.16), transparent 40%), ' +
+              'radial-gradient(circle at 80% 80%, rgba(124,58,237,0.16), transparent 45%), ' +
+              'radial-gradient(circle at 50% 100%, rgba(255,215,0,0.12), transparent 50%), ' +
+              'radial-gradient(circle at 70% 20%, rgba(212,175,55,0.10), transparent 40%)'
+            : 'radial-gradient(circle at 20% 20%, rgba(0,210,255,0.14), transparent 40%), ' +
+              'radial-gradient(circle at 80% 80%, rgba(118,75,162,0.14), transparent 40%), ' +
+              'radial-gradient(circle at 50% 100%, rgba(240,147,251,0.14), transparent 45%), ' +
+              'radial-gradient(circle at 70% 30%, rgba(0,245,160,0.12), transparent 40%)',
         }}
       />
     </div>

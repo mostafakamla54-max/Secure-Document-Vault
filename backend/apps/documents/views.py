@@ -1,3 +1,6 @@
+import codecs
+import hashlib
+
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, mixins, permissions, status, viewsets
@@ -211,3 +214,93 @@ class DocumentAiAnalyzeView(APIView):
             detail='AI analyzed "{0}" via provider={1}'.format(doc.title, result.get('provider')),
         )
         return Response(result)
+
+
+def _hex_bytes(data):
+    return codecs.encode(data, 'hex').decode('ascii')
+
+
+class DocumentEncryptedTextView(APIView):
+    """Return encrypted metadata + hex dump of the ciphertext (owner only).
+
+    Safe by design: the ciphertext alone is useless without the key, so it can
+    be shown to the owner to prove the AES-256-GCM encryption is real.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, pk):
+        doc = get_object_or_404(
+            Document, pk=pk, user=request.user, is_deleted=False
+        )
+        if not doc.encrypted_file:
+            return Response(
+                {'detail': 'Document has no encrypted content.'},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        AuditLog.objects.log(
+            actor=request.user, action='DOCUMENT_VIEW_ENCRYPTED',
+            object_type='document', object_id=doc.id,
+            detail=f'Viewing encrypted content of "{doc.title}"',
+        )
+        encrypted = bytes(doc.encrypted_file)
+        is_link = doc.original_extension == 'link'
+        return Response({
+            'id': doc.id,
+            'title': doc.title,
+            'created_at': doc.created_at.isoformat() if doc.created_at else None,
+            'category': doc.category or '',
+            'importance': doc.importance or '',
+            'is_link': is_link,
+            'content_type': 'link' if is_link else (doc.mime_type or 'file'),
+            'filename': doc.original_filename or '',
+            'algorithm': 'AES-256-GCM',
+            'key_bits': 256,
+            'nonce_bytes': len(doc.nonce or b''),
+            'tag_bytes': 16,
+            'ciphertext_bytes': len(encrypted),
+            'plaintext_bytes': doc.file_size or 0,
+            'nonce_hex': _hex_bytes(doc.nonce or b''),
+            'ciphertext_hex': _hex_bytes(encrypted),
+            'checksum_sha256': doc.checksum or '',
+        })
+
+
+class DocumentDecryptTextView(APIView):
+    """Decrypt on the server and return the original content (owner only).
+
+    The key never leaves the server; only the owner may trigger decryption,
+    and every decrypt is written to the audit log.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, pk):
+        doc = get_object_or_404(
+            Document, pk=pk, user=request.user, is_deleted=False
+        )
+        raw = doc.decrypt_content() or b''
+        if not raw:
+            return Response(
+                {'detail': 'Document has no content.'},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        text = None
+        try:
+            text = raw.decode('utf-8')
+        except (UnicodeDecodeError, AttributeError):
+            text = None
+        checksum_match = bool(doc.checksum) and (
+            hashlib.sha256(raw).hexdigest() == doc.checksum
+        )
+        AuditLog.objects.log(
+            actor=request.user, action='DOCUMENT_DECRYPT',
+            object_type='document', object_id=doc.id,
+            detail=f'Decrypted document "{doc.title}" ({len(raw)} bytes)',
+        )
+        return Response({
+            'decrypted': text,
+            'is_text': text is not None,
+            'bytes': len(raw),
+            'checksum_match': checksum_match,
+            'filename': doc.original_filename or '',
+            'mime_type': doc.mime_type or 'application/octet-stream',
+        })

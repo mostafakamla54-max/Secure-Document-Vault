@@ -4,7 +4,9 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import PersonIcon from '@mui/icons-material/Person';
 import EmailIcon from '@mui/icons-material/Email';
+import BadgeIcon from '@mui/icons-material/Badge';
 import LockIcon from '@mui/icons-material/Lock';
+import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import { registerUser } from '../../store/slices/authSlice';
 import AnimatedBackground from '../common/AnimatedBackground';
 
@@ -46,7 +48,7 @@ function RegisterPage() {
       const m = String(msg);
       if (m.includes('with this username already exists') || m.includes('اسم المستخدم موجود')) return 'اسم المستخدم موجود مسبقاً، اختر اسماً آخر';
       if (m.includes('with this email already exists') || m.includes('البريد الإلكتروني مستخدم')) return 'البريد الإلكتروني مستخدم، استخدم بريداً آخر';
-      if (m.includes('must include') || m.includes('invalid') && m.includes('@') || m.toLowerCase().includes('valid email')) return 'يرجى إدخال بريد إلكتروني صحيح';
+      if ((m.includes('must include') || (m.includes('invalid') && m.includes('@')) || m.toLowerCase().includes('valid email'))) return 'يرجى إدخال بريد إلكتروني صحيح';
       if (m.includes('may not be blank') || m.includes('required')) return 'هذا الحقل مطلوب';
       if (m.includes('may not be null')) return 'هذا الحقل مطلوب';
       if (m.toLowerCase().includes('password') && m.toLowerCase().includes('weak')) return 'كلمة المرور يجب أن تكون 8 أحرف على الأقل';
@@ -107,13 +109,18 @@ function RegisterPage() {
   });
 
   return (
-    <div className="auth-page">
-      <AnimatedBackground />
+    <div className="auth-page lux-auth-page">
+      <AnimatedBackground variant="gold" />
       <Box sx={{ width: '100%', maxWidth: 560 }}>
-        <div className="auth-card fade-up">
-          <div className="auth-logo float">🔐</div>
-          <h1 className="auth-title">إنشاء حساب جديد</h1>
-          <p className="auth-subtitle">انضم إلى خزنة الوثائق الآمنة وابدأ الآن!</p>
+        <div className="lux-card">
+          <div className="lux-brand">
+            <div className="lux-brand-icon">🛡️</div>
+            <div className="lux-brand-title">SECURE VAULT AI PRO</div>
+            <div className="lux-brand-sub">✨ Your Digital Fortress ✨</div>
+          </div>
+
+          <h1 className="lux-title">🌟 انطلق في رحلتك الآمنة!</h1>
+          <p className="lux-subtitle">أنشئ حسابك وابدأ حماية بياناتك</p>
 
           {generalError && <Alert severity="error" sx={{ mb: 2, borderRadius: 3 }}>{generalError}</Alert>}
           {!generalError && Object.keys(errors).length > 0 && (
@@ -123,37 +130,37 @@ function RegisterPage() {
           <form onSubmit={handleSubmit}>
             <div className="auth-field">
               <label>👤 اسم المستخدم</label>
-              <TextField {...TextFieldProps('username', 'اسم المستخدم', <PersonIcon sx={{ color: '#4a90d9' }} />)} />
+              <TextField {...TextFieldProps('username', 'اسم المستخدم', <PersonIcon />)} />
             </div>
 
             <div className="auth-field">
               <label>📧 البريد الإلكتروني</label>
-              <TextField {...TextFieldProps('email', 'البريد الإلكتروني', <EmailIcon sx={{ color: '#2ecc71' }} />, { type: 'email' })} />
+              <TextField {...TextFieldProps('email', 'البريد الإلكتروني', <EmailIcon />, { type: 'email' })} />
             </div>
 
             <Box sx={{ display: 'flex', gap: 2, flexWrap: { xs: 'wrap', sm: 'nowrap' } }}>
               <Box sx={{ flex: 1 }}>
                 <div className="auth-field">
                   <label>👤 الاسم الأول</label>
-                  <TextField {...TextFieldProps('first_name', 'الاسم الأول', null)} />
+                  <TextField {...TextFieldProps('first_name', 'الاسم الأول', <BadgeIcon />)} />
                 </div>
               </Box>
               <Box sx={{ flex: 1 }}>
                 <div className="auth-field">
                   <label>👤 الاسم الأخير</label>
-                  <TextField {...TextFieldProps('last_name', 'الاسم الأخير', null)} />
+                  <TextField {...TextFieldProps('last_name', 'الاسم الأخير', <BadgeIcon />)} />
                 </div>
               </Box>
             </Box>
 
             <div className="auth-field">
               <label>🔑 كلمة المرور</label>
-              <TextField {...TextFieldProps('password', 'كلمة المرور', <LockIcon sx={{ color: '#7c6df0' }} />, { type: 'password' })} />
+              <TextField {...TextFieldProps('password', 'كلمة المرور', <LockIcon />, { type: 'password' })} />
             </div>
 
             <div className="auth-field">
               <label>✅ تأكيد كلمة المرور</label>
-              <TextField {...TextFieldProps('password_confirm', 'تأكيد كلمة المرور', <LockIcon sx={{ color: '#ff9a56' }} />, { type: 'password' })} />
+              <TextField {...TextFieldProps('password_confirm', 'تأكيد كلمة المرور', <VerifiedUserIcon />, { type: 'password' })} />
             </div>
 
             <Button
@@ -161,21 +168,21 @@ function RegisterPage() {
               variant="contained"
               fullWidth
               disabled={loading}
-              className="btn-nery btn-pulse"
+              className="lux-btn"
               sx={{ mt: 1, py: 1.5, fontSize: 17 }}
             >
-              {loading ? <CircularProgress size={24} color="inherit" /> : '🚀 إنشاء حساب'}
+              {loading ? <CircularProgress size={24} color="inherit" /> : '🚀 إنشاء الحساب'}
             </Button>
           </form>
 
-          <Typography variant="body2" sx={{ mt: 2.5, textAlign: 'center', color: '#718096' }}>
+          <Typography variant="body2" sx={{ mt: 2.5, textAlign: 'center', color: '#cbb26a' }}>
             لديك حساب؟{' '}
-            <Link to="/login" style={{ color: '#4a90d9', fontWeight: 800 }}>
-              سجّل الدخول
+            <Link to="/login" className="lux-link">
+              ✨ سجّل الدخول
             </Link>
           </Typography>
 
-          <p className="auth-security">🔒 جميع البيانات مشفرة بـ AES-256-GCM</p>
+          <p className="lux-security">🔒 جميع البيانات مشفرة بـ AES-256-GCM</p>
         </div>
       </Box>
     </div>

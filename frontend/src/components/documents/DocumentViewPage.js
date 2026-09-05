@@ -6,9 +6,11 @@ import { useParams, useNavigate } from 'react-router-dom';
 import DownloadIcon from '@mui/icons-material/Download';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import LinkIcon from '@mui/icons-material/Link';
+import LockIcon from '@mui/icons-material/Lock';
 import { documentService } from '../../services/documentService';
 import Layout from '../common/Layout';
 import DocumentAiPanel from './DocumentAiPanel';
+import EncryptedContentModal from './EncryptedContentModal';
 
 function DocumentViewPage() {
   const { id } = useParams();
@@ -18,6 +20,7 @@ function DocumentViewPage() {
   const [content, setContent] = React.useState(null);
   const [contentType, setContentType] = React.useState(null);
   const [error, setError] = React.useState('');
+  const [showEnc, setShowEnc] = React.useState(false);
 
   React.useEffect(() => {
     const load = async () => {
@@ -91,7 +94,10 @@ function DocumentViewPage() {
     <Layout>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Button startIcon={<ArrowBackIcon />} onClick={() => navigate('/documents')} sx={{ color: '#4a90d9', fontWeight: 700 }}>{'\u0627\u0644\u0639\u0648\u062F\u0629 \u0644\u0644\u0648\u062B\u0627\u0626\u0642'}</Button>
-        <Button variant="contained" className="btn-primary" startIcon={<DownloadIcon />} onClick={handleDownload}>{'\u062A\u062D\u0645\u064A\u0644 \u0627\u0644\u0645\u0644\u0641 \u0627\u0644\u0623\u0635\u0644\u064A'}</Button>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button variant="outlined" startIcon={<LockIcon />} onClick={() => setShowEnc(true)} sx={{ color: '#b7791f', borderColor: '#f1c40f', fontWeight: 700 }}>{'\u0627\u0644\u0646\u0635 \u0627\u0644\u0645\u0634\u0641\u0631'}</Button>
+          <Button variant="contained" className="btn-primary" startIcon={<DownloadIcon />} onClick={handleDownload}>{'\u062A\u062D\u0645\u064A\u0644 \u0627\u0644\u0645\u0644\u0641 \u0627\u0644\u0623\u0635\u0644\u064A'}</Button>
+        </Box>
       </Box>
       {error && <Alert severity="error" sx={{ mb: 2, borderRadius: 3 }}>{error}</Alert>}
       <Paper sx={{ p: 4, background: '#ffffff', border: '1px solid #edf2f7', borderRadius: 4, boxShadow: '0 4px 20px rgba(74,144,217,0.1)' }}>
@@ -116,6 +122,7 @@ function DocumentViewPage() {
         <Divider sx={{ my: 3 }} />
         <Typography variant="caption" sx={{ color: '#a0aec0', display: 'block', textAlign: 'center' }}>{'\u062C\u0645\u064A\u0639 \u0627\u0644\u0648\u062B\u0627\u0626\u0642 \u0645\u0634\u0641\u0631\u0629 \u0628\u0627\u0644\u0643\u0627\u0645\u0644 \u0648\u062A\u0641\u0643 \u062A\u0644\u0642\u0627\u0626\u064A\u0627 \u0639\u0646\u062F \u0627\u0644\u0639\u0631\u0636 \u0641\u0642\u0637'}</Typography>
       </Paper>
+      <EncryptedContentModal docId={doc.id} open={showEnc} onClose={() => setShowEnc(false)} />
     </Layout>
   );
 }

@@ -59,12 +59,14 @@ const buildTheme = (mode, lang) => {
 function ThemedApp() {
   const mode = useSelector((state) => state.auth.themeMode);
   const lang = useSelector((state) => state.auth.lang);
+  const authed = useSelector((state) => !!state.auth.token);
   const theme = React.useMemo(() => buildTheme(mode, lang), [mode, lang]);
   React.useEffect(() => {
     document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
     document.documentElement.lang = lang;
     document.body.classList.toggle('dark', mode === 'dark');
-  }, [lang, mode]);
+    document.body.classList.toggle('vault-lux', authed);
+  }, [lang, mode, authed]);
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />

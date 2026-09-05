@@ -1,9 +1,11 @@
 import React from 'react';
-import { Box, Typography, TextField, Button, Alert, CircularProgress, InputAdornment } from '@mui/material';
+import { Typography, TextField, Button, Alert, CircularProgress, InputAdornment } from '@mui/material';
 import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import PersonIcon from '@mui/icons-material/Person';
 import LockIcon from '@mui/icons-material/Lock';
+import GoogleIcon from '@mui/icons-material/Google';
+import GitHubIcon from '@mui/icons-material/GitHub';
 import { loginUser, clearError } from '../../store/slices/authSlice';
 import AnimatedBackground from '../common/AnimatedBackground';
 
@@ -27,12 +29,17 @@ function LoginPage() {
   };
 
   return (
-    <div className="auth-page">
-      <AnimatedBackground />
-      <div className="auth-card fade-up">
-        <div className="auth-logo float">🔐</div>
-        <h1 className="auth-title">Secure Vault</h1>
-        <p className="auth-subtitle">مرحباً بعودتك! سجّل دخولك للمتابعة</p>
+    <div className="auth-page lux-auth-page">
+      <AnimatedBackground variant="gold" />
+      <div className="lux-card">
+        <div className="lux-brand">
+          <div className="lux-brand-icon">🛡️</div>
+          <div className="lux-brand-title">SECURE VAULT AI PRO</div>
+          <div className="lux-brand-sub">✨ Your Digital Fortress ✨</div>
+        </div>
+
+        <h1 className="lux-title">🌟 مرحباً بعودتك!</h1>
+        <p className="lux-subtitle">سجّل دخولك لعالمك الآمن</p>
 
         {error && (
           <Alert severity="error" sx={{ mb: 2, borderRadius: 3 }}>
@@ -54,7 +61,7 @@ function LoginPage() {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <PersonIcon sx={{ color: '#4a90d9' }} />
+                    <PersonIcon />
                   </InputAdornment>
                 ),
               }}
@@ -75,11 +82,18 @@ function LoginPage() {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <LockIcon sx={{ color: '#7c6df0' }} />
+                    <LockIcon />
                   </InputAdornment>
                 ),
               }}
             />
+          </div>
+
+          <div className="lux-row">
+            <label>
+              <input type="checkbox" /> ☑️ تذكرني
+            </label>
+            <span className="lux-forgot">🔗 نسيت كلمة المرور؟</span>
           </div>
 
           <Button
@@ -87,21 +101,28 @@ function LoginPage() {
             variant="contained"
             fullWidth
             disabled={loading}
-            className="btn-primary btn-pulse"
+            className="lux-btn"
             sx={{ mt: 1, py: 1.5, fontSize: 17 }}
           >
             {loading ? <CircularProgress size={24} color="inherit" /> : '🚀 تسجيل الدخول'}
           </Button>
         </form>
 
-        <Typography variant="body2" sx={{ mt: 2.5, textAlign: 'center', color: '#718096' }}>
+        <div className="lux-divider">أو المتابعة عبر</div>
+
+        <div className="lux-social">
+          <Button disabled startIcon={<GoogleIcon />}>Google</Button>
+          <Button disabled startIcon={<GitHubIcon />}>GitHub</Button>
+        </div>
+
+        <Typography variant="body2" sx={{ mt: 2.5, textAlign: 'center', color: '#cbb26a' }}>
           ليس لديك حساب؟{' '}
-          <Link to="/register" style={{ color: '#4a90d9', fontWeight: 800 }}>
-            إنشاء حساب
+          <Link to="/register" className="lux-link">
+            ✨ إنشاء حساب
           </Link>
         </Typography>
 
-        <p className="auth-security">🔒 جميع البيانات مشفرة بـ AES-256-GCM</p>
+        <p className="lux-security">🔒 جميع البيانات مشفرة بـ AES-256-GCM</p>
       </div>
     </div>
   );
