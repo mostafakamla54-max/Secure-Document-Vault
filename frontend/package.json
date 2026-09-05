@@ -1,0 +1,55 @@
+{
+  "name": "secure-document-vault-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Frontend for Secure Document Vault",
+  "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.14.19",
+    "@mui/material": "^5.14.20",
+    "@mui/x-data-grid": "^6.18.5",
+    "@reduxjs/toolkit": "^1.9.7",
+    "axios": "^1.6.2",
+    "crypto-js": "^4.2.0",
+    "dayjs": "^1.11.10",
+    "qrcode.react": "^4.2.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-dropzone": "^14.2.3",
+    "react-hook-form": "^7.48.2",
+    "react-redux": "^8.1.3",
+    "react-router-dom": "^6.20.1",
+    "react-scripts": "5.0.1",
+    "yup": "^1.3.3"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "lint": "eslint src"
+  },
+  "proxy": "http://localhost:8000",
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "eslint": "^8.54.0"
+  }
+}

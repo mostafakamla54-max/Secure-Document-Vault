@@ -1,0 +1,40 @@
+# Render Blueprint — one click deploy to a permanent https:// URL.
+# Docs: https://render.com/docs/blueprint-spec
+databases:
+  - name: secure-vault-db
+    databaseName: secure_vault
+    user: vault_service
+    plan: free
+
+services:
+  - type: web
+    name: secure-vault-backend
+    runtime: docker
+    plan: free
+    rootDir: .
+    dockerfilePath: ./backend/Dockerfile
+    healthCheckPath: /api/v1/accounts/login/
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_DEBUG
+        value: "False"
+      - key: DJANGO_ALLOWED_HOSTS
+        value: "*"
+      - key: DJANGO_HTTPS
+        value: "True"
+      - key: USE_SQLITE
+        value: "0"
+      # UI and API are same-origin (both served by Django/Whitenoise), so CORS
+      # is never triggered on Render — no CORS configuration is required.
+      - key: SUPERVISOR_USERNAME
+        value: admin
+      - key: SUPERVISOR_PASSWORD
+        generateValue: true
+      - key: SUPERVISOR_EMAIL
+        value: admin@securevault.com
+      - fromDatabase:
+          name: secure-vault-db
+          property: connectionString
