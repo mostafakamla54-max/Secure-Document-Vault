@@ -71,9 +71,26 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database: SQLite by default for fast local development.
 # Set USE_SQLITE=0 to use PostgreSQL (production / Docker).
+# If DATABASE_URL is provided (e.g. Railway Postgres), it always wins.
 USE_SQLITE = os.environ.get('USE_SQLITE', '1') == '1'
 
-if USE_SQLITE:
+DATABASE_URL = os.environ.get('DATABASE_URL', '')
+if DATABASE_URL:
+    import urllib.parse as _db_url
+
+    _parsed = _db_url.urlparse(DATABASE_URL)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': _parsed.path.lstrip('/') or 'postgres',
+            'USER': _parsed.username or '',
+            'PASSWORD': _parsed.password or '',
+            'HOST': _parsed.hostname or 'localhost',
+            'PORT': _parsed.port or '5432',
+            'OPTIONS': {'connect_timeout': 10},
+        }
+    }
+elif USE_SQLITE:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
