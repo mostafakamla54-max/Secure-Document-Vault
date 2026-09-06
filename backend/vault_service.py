@@ -57,7 +57,7 @@ class VaultService(win32serviceutil.ServiceFramework):
         def _serve():
             serve(
                 application,
-                host='0.0.0.0',
+                host='127.0.0.1',
                 port=8000,
                 threads=16,
                 channel_timeout=120,
