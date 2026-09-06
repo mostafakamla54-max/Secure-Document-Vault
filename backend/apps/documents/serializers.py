@@ -2,6 +2,8 @@ from rest_framework import serializers
 
 from .models import Document, DocumentTag, DocumentTagLink, DocumentVersion
 
+MAX_UPLOAD_SIZE = 20 * 1024 * 1024
+
 
 class DocumentSerializer(serializers.ModelSerializer):
     file = serializers.FileField(write_only=True, required=False)
@@ -34,6 +36,15 @@ class DocumentUploadSerializer(serializers.ModelSerializer):
         model = Document
         fields = ['id', 'title', 'description', 'category', 'importance', 'file', 'link']
         read_only_fields = ['id']
+
+    def validate_file(self, value):
+        if value is None:
+            return value
+        if value.size > MAX_UPLOAD_SIZE:
+            raise serializers.ValidationError(
+                f'File size exceeds the {MAX_UPLOAD_SIZE // (1024 * 1024)}MB limit.'
+            )
+        return value
 
     def create(self, validated_data):
         file = validated_data.pop('file', None)

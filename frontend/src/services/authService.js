@@ -6,6 +6,7 @@ export const authService = {
   logout: (data) => api.post('/accounts/logout/', data),
   getProfile: () => api.get('/accounts/profile/'),
   updateProfile: (data) => api.patch('/accounts/profile/', data),
+  uploadAvatar: (formData) => api.patch('/accounts/profile/', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
   changePassword: (data) => api.post('/accounts/change-password/', data),
   requestPasswordReset: (data) => api.post('/accounts/password-reset/', data),
   confirmPasswordReset: (data) => api.post('/accounts/password-reset/confirm/', data),

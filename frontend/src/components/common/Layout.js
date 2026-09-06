@@ -118,6 +118,18 @@ function Layout({ children }) {
 
   const initials = (user && (user.first_name?.[0] || user.username?.[0])) || 'U';
 
+  const menuList = menuItems.map((item) => {
+    const selected = location.pathname === item.path || (item.path === '/documents' && location.pathname.startsWith('/documents'));
+    return (
+      <ListItem key={item.path} disablePadding sx={{ mb: 0.5 }}>
+        <ListItemButton selected={selected} onClick={() => go(item.path)} sx={{ borderRadius: 3, '&.Mui-selected': { background: 'linear-gradient(135deg, #4a90d9, #7c6df0)', color: '#fff', '& .MuiListItemIcon-root': { color: '#fff' }, boxShadow: '0 4px 12px rgba(74,144,217,0.35)' }, '&:hover': { background: '#f0f8ff' }, color: '#2d3748' }}>
+          <ListItemIcon sx={{ minWidth: 40, color: 'inherit' }}>{item.icon}</ListItemIcon>
+          <ListItemText primary={item.text} sx={{ '& .MuiTypography-root': { fontWeight: 700 } }} />
+        </ListItemButton>
+      </ListItem>
+    );
+  });
+
   return (
     <Box className="layout-app lux-inner" sx={{ display: 'flex', minHeight: '100vh', background: 'linear-gradient(135deg, #ffffff, #e0f2ff 20%, #f3e8ff 50%, #e0fff4 80%, #fff0f6 100%)', backgroundSize: '300% 300%', animation: 'gradient-move 18s ease infinite', position: 'relative' }}>
       <Box className="dash-bg" sx={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }} aria-hidden="true" />
@@ -133,7 +145,7 @@ function Layout({ children }) {
       </Box>
       <Box className="lux-topbar" position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, width: '100%', background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(16px)', borderBottom: '1px solid #edf2f7', boxShadow: '0 2px 12px rgba(74,144,217,0.08)' }}>
         <Toolbar>
-          <IconButton color="inherit" edge="start" onClick={() => setOpen(!open)} sx={{ mr: 2, display: { md: 'none' }, color: '#4a90d9' }}>
+          <IconButton color="inherit" edge="start" onClick={() => setOpen(!open)} aria-label="menu" sx={{ mr: 2, display: { md: 'none' }, color: '#4a90d9' }}>
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1, fontWeight: 800, color: '#4a90d9', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 1 }} onClick={() => go('/')}>
@@ -171,7 +183,7 @@ function Layout({ children }) {
           </Tooltip>
 
           <Tooltip title={t('\u0627\u0644\u0644\u063A\u0629 / Language', 'Language')}>
-            <IconButton onClick={() => dispatch(toggleLang())} sx={{ color: '#4a90d9', fontWeight: 700 }}>
+            <IconButton onClick={() => dispatch(toggleLang())} className="lux-lang-toggle" sx={{ color: '#4a90d9', fontWeight: 700 }}>
               <LanguageIcon /> <Box component="span" sx={{ fontSize: 12, ml: 0.3 }}>{lang === 'ar' ? 'EN' : '\u0639'}</Box>
             </IconButton>
           </Tooltip>
@@ -200,17 +212,13 @@ function Layout({ children }) {
 
       <Drawer variant="permanent" className="layout-sidebar" sx={{ width: drawerWidth, flexShrink: 0, '& .MuiDrawer-paper': { width: drawerWidth, boxSizing: 'border-box', mt: 8, display: { xs: 'none', md: 'block' }, background: 'rgba(255,255,255,0.9)', borderRight: '1px solid #edf2f7', backdropFilter: 'blur(10px)' } }} open>
         <List sx={{ px: 1.5, pt: 2 }}>
-          {menuItems.map((item) => {
-            const selected = location.pathname === item.path || (item.path === '/documents' && location.pathname.startsWith('/documents'));
-            return (
-              <ListItem key={item.path} disablePadding sx={{ mb: 0.5 }}>
-                <ListItemButton selected={selected} onClick={() => go(item.path)} sx={{ borderRadius: 3, '&.Mui-selected': { background: 'linear-gradient(135deg, #4a90d9, #7c6df0)', color: '#fff', '& .MuiListItemIcon-root': { color: '#fff' }, boxShadow: '0 4px 12px rgba(74,144,217,0.35)' }, '&:hover': { background: '#f0f8ff' }, color: '#2d3748' }}>
-                  <ListItemIcon sx={{ minWidth: 40, color: 'inherit' }}>{item.icon}</ListItemIcon>
-                  <ListItemText primary={item.text} sx={{ '& .MuiTypography-root': { fontWeight: 700 } }} />
-                </ListItemButton>
-              </ListItem>
-            );
-          })}
+          {menuList}
+        </List>
+      </Drawer>
+
+      <Drawer variant="temporary" className="layout-sidebar" open={open} onClose={() => setOpen(false)} sx={{ display: { md: 'none' }, '& .MuiDrawer-paper': { width: drawerWidth, boxSizing: 'border-box', background: 'rgba(255,255,255,0.96)', borderRight: '1px solid #edf2f7', backdropFilter: 'blur(12px)' } }}>
+        <List sx={{ px: 1.5, pt: 8 }}>
+          {menuList}
         </List>
       </Drawer>
 

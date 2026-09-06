@@ -58,9 +58,9 @@ function NotificationPage() {
 
   return (
     <Layout>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
         <Typography variant="h4" className="page-title">🔔 الإشعارات</Typography>
-        <Button variant="contained" className="btn-primary" startIcon={<DoneAllIcon />} onClick={handleMarkAllRead}>
+        <Button variant="contained" className="btn-primary" startIcon={<DoneAllIcon />} onClick={handleMarkAllRead} sx={{ width: { xs: '100%', md: 'auto' }, justifyContent: 'center' }}>
           تحديد الكل كمقروء
         </Button>
       </Box>

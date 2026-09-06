@@ -12,6 +12,9 @@ const buildTheme = (mode, lang) => {
   const dark = mode === 'dark';
   return createTheme({
     direction: lang === 'ar' ? 'rtl' : 'ltr',
+    breakpoints: {
+      values: { xs: 0, sm: 600, md: 769, lg: 1025, xl: 1441 },
+    },
     palette: {
       mode,
       primary: { main: '#4a90d9', light: '#7c6df0' },

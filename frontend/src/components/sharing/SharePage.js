@@ -69,9 +69,9 @@ function SharePage() {
 
   return (
     <Layout>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
         <Typography variant="h4" className="page-title">🔗 المشاركة الآمنة</Typography>
-        <Button variant="contained" className="btn-primary btn-pulse" startIcon={<ShareIcon />} onClick={() => setOpen(true)}>مشاركة وثيقة</Button>
+        <Button variant="contained" className="btn-primary btn-pulse" startIcon={<ShareIcon />} onClick={() => setOpen(true)} sx={{ width: { xs: '100%', sm: 'auto' }, justifyContent: 'center' }}>مشاركة وثيقة</Button>
       </Box>
 
       {msg && <Alert severity={msgType} sx={{ mb: 2, borderRadius: 3 }}>{msg}</Alert>}

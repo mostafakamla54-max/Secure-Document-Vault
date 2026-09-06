@@ -92,9 +92,9 @@ function DocumentViewPage() {
 
   return (
     <Layout>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, flexWrap: 'wrap', gap: 1 }}>
         <Button startIcon={<ArrowBackIcon />} onClick={() => navigate('/documents')} sx={{ color: '#4a90d9', fontWeight: 700 }}>{'\u0627\u0644\u0639\u0648\u062F\u0629 \u0644\u0644\u0648\u062B\u0627\u0626\u0642'}</Button>
-        <Box sx={{ display: 'flex', gap: 1 }}>
+        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
           <Button variant="outlined" startIcon={<LockIcon />} onClick={() => setShowEnc(true)} sx={{ color: '#b7791f', borderColor: '#f1c40f', fontWeight: 700 }}>{'\u0627\u0644\u0646\u0635 \u0627\u0644\u0645\u0634\u0641\u0631'}</Button>
           <Button variant="contained" className="btn-primary" startIcon={<DownloadIcon />} onClick={handleDownload}>{'\u062A\u062D\u0645\u064A\u0644 \u0627\u0644\u0645\u0644\u0641 \u0627\u0644\u0623\u0635\u0644\u064A'}</Button>
         </Box>
@@ -129,7 +129,7 @@ function DocumentViewPage() {
 
 function DetailItem({ label, value }) {
   return (
-    <Grid item xs={6} sm={4}>
+    <Grid item xs={12} sm={6} md={4}>
       <Typography variant="body2" color="text.secondary">{label}</Typography>
       <Chip label={value} size="small" sx={{ mt: 0.5, color: '#2d3748', background: '#f0f8ff', border: '1px solid #cfe5ff', fontWeight: 700 }} />
     </Grid>

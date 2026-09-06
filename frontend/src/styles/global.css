@@ -1387,3 +1387,143 @@ body.vault-lux .MuiOutlinedInput-root.Mui-disabled input {
   color: #cbb26a !important;
   -webkit-text-fill-color: #cbb26a;
 }
+
+/* ==============================================
+   📱 RESPONSIVE — تجاوب كامل (جوال/تابلت/لابتوب/شاشات كبيرة)
+   نقاط القطع: جوال <769 | تابلت 769-1024 | لابتوب 1025-1440 | كبير >1440
+   كل القواعد مقيّدة داخل التطبيق حتى لا يتأثر أي شيء خارجي
+   ============================================== */
+
+/* --- سلم الخطوط (rem) --- */
+html { font-size: 15px; }
+@media (min-width: 769px) { html { font-size: 15.5px; } }
+@media (min-width: 1025px) { html { font-size: 16px; } }
+@media (min-width: 1441px) { html { font-size: 16.5px; } }
+
+body { font-size: 15px; }
+@media (min-width: 769px) { body { font-size: 15.5px; } }
+@media (min-width: 1025px) { body { font-size: 16px; } }
+
+/* كسر النصوص الطويلة داخل البطاقات والعناوين */
+.layout-main *,
+.auth-page * {
+  overflow-wrap: break-word;
+}
+
+/* ==============================================
+   📱 الجوال (<769): عمود واحد + أزرار لمس 44px
+   ============================================== */
+@media (max-width: 767.98px) {
+  .layout-main {
+    padding: 12px 12px 20px !important;
+  }
+
+  .layout-main .MuiPaper-root {
+    padding: 18px !important;
+  }
+
+  .layout-main .MuiTypography-h4 { font-size: 22px !important; }
+  .layout-main .MuiTypography-h5 { font-size: 19px !important; }
+  .layout-main .MuiTypography-h6 { font-size: 16px !important; }
+
+  /* حقول الفلاتر تنكمش بدل أن تفيض */
+  .layout-main .MuiTextField-root,
+  .layout-main .MuiFormControl-root { min-width: 0 !important; }
+
+  /* أزرار تلامس مريحة */
+  .MuiButton-root { min-height: 44px !important; }
+
+  /* الشريط العلوي */
+  .lux-topbar .MuiToolbar-root {
+    min-height: 56px !important;
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+  }
+  .lux-topbar .MuiTypography-h6 { font-size: 15px !important; }
+  .lux-topbar .MuiIconButton-root { width: 42px !important; height: 42px !important; }
+
+  /* الجداول: تمرير أفقي بدل التهشيم */
+  .MuiDataGrid-root { min-width: 660px; }
+  .layout-main > *:has(> .MuiDataGrid-root),
+  .layout-main .MuiPaper-root:has(> .MuiDataGrid-root) { overflow-x: auto; }
+
+  /* النوافذ الحوارية تملأ الشاشة براحة */
+  .MuiDialog-paper {
+    margin: 12px !important;
+    max-width: calc(100vw - 24px) !important;
+    width: calc(100vw - 24px) !important;
+  }
+  .MuiDialogTitle-root { flex-wrap: wrap; gap: 8px; }
+  .MuiDialogActions-root { flex-wrap: wrap; gap: 8px; }
+
+  /* صفحات الدخول */
+  .lux-card, .auth-card {
+    padding: 26px 18px !important;
+    border-radius: 20px !important;
+  }
+  .lux-brand-title { font-size: 22px !important; }
+  .lux-title, .auth-title { font-size: 23px !important; }
+  .lux-card .lux-social { flex-direction: column; }
+}
+
+/* جوال صغير (<480): مساحات أنعم وزر لغة يختفي */
+@media (max-width: 480px) {
+  .lux-lang-toggle { display: none !important; }
+  .layout-main { padding: 10px 10px 16px !important; }
+  .layout-main .MuiPaper-root { padding: 14px !important; }
+  .layout-main .MuiTypography-h4 { font-size: 20px !important; }
+  .lux-topbar .MuiTypography-h6 { font-size: 14px !important; }
+  .lux-topbar .MuiToolbar-root { padding-left: 4px !important; padding-right: 4px !important; }
+  .lux-topbar .MuiIconButton-root { width: 40px !important; height: 40px !important; }
+  .MuiDialog-paper { margin: 8px !important; max-width: calc(100vw - 16px) !important; width: calc(100vw - 16px) !important; }
+  .lux-card, .auth-card { padding: 22px 14px !important; }
+}
+
+/* جوال كبير (481-768): عمودي بمساحات أوسع */
+@media (min-width: 481px) and (max-width: 768px) {
+  .layout-main { padding: 16px 18px 24px !important; }
+  .layout-main .MuiPaper-root { padding: 20px !important; }
+}
+
+/* ==============================================
+   📱 التابلت (769-1024): قائمة جانبية مصغّرة قابلة للتمدد
+   ============================================== */
+@media (min-width: 769px) and (max-width: 1024.98px) {
+  .layout-sidebar .MuiDrawer-paper {
+    width: 78px !important;
+    overflow-x: hidden;
+    transition: width 0.25s ease !important;
+  }
+  .layout-sidebar .MuiListItemButton-root {
+    justify-content: center;
+    padding: 10px 0 !important;
+    margin: 4px 8px !important;
+  }
+  .layout-sidebar .MuiListItemIcon-root { min-width: 0 !important; margin: 0 !important; }
+  .layout-sidebar .MuiListItemText-root { display: none; }
+
+  .layout-sidebar .MuiDrawer-paper:hover { width: 250px !important; }
+  .layout-sidebar .MuiDrawer-paper:hover .MuiListItemButton-root { justify-content: flex-start; }
+  .layout-sidebar .MuiDrawer-paper:hover .MuiListItemIcon-root { min-width: 40px !important; }
+  .layout-sidebar .MuiDrawer-paper:hover .MuiListItemText-root { display: block; }
+
+  .MuiButton-root { min-height: 40px !important; }
+  .lux-topbar .MuiIconButton-root { width: 40px !important; height: 40px !important; }
+  .layout-main .MuiTypography-h4 { font-size: 26px !important; }
+}
+
+/* ==============================================
+   💻 اللابتوب (1025-1440): قائمة جانبية كاملة
+   ============================================== */
+@media (min-width: 1025px) and (max-width: 1440px) {
+  .layout-sidebar .MuiDrawer-paper { width: 250px !important; }
+  .MuiButton-root { min-height: 36px !important; }
+}
+
+/* ==============================================
+   🖥️ الشاشات الكبيرة (>1440): قائمة أوسع + خطوط أكبر
+   ============================================== */
+@media (min-width: 1441px) {
+  .layout-sidebar .MuiDrawer-paper { width: 280px !important; }
+  .layout-main { padding: 32px !important; }
+}

@@ -15,9 +15,9 @@ export const fetchDocuments = createAsyncThunk(
 
 export const uploadDocument = createAsyncThunk(
   'documents/upload',
-  async (data, { rejectWithValue }) => {
+  async ({ data, onUploadProgress }, { rejectWithValue }) => {
     try {
-      const response = await documentService.create(data);
+      const response = await documentService.create(data, onUploadProgress);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);

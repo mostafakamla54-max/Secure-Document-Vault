@@ -14,6 +14,7 @@ import ShareIcon from '@mui/icons-material/Share';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import SecurityIcon from '@mui/icons-material/Security';
 import QrCode2Icon from '@mui/icons-material/QrCode2';
+import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import { QRCodeSVG } from 'qrcode.react';
 import Layout from '../common/Layout';
 import { fetchProfile } from '../../store/slices/authSlice';
@@ -34,6 +35,8 @@ function ProfilePage() {
   const [twofaSetup, setTwofaSetup] = React.useState(null);
   const [twofaCode, setTwofaCode] = React.useState('');
   const [twofaDialog, setTwofaDialog] = React.useState(null);
+  const avatarInputRef = React.useRef(null);
+  const [avatarUploading, setAvatarUploading] = React.useState(false);
 
   React.useEffect(() => {
     authService.get2faStatus().then((res) => {
@@ -84,6 +87,28 @@ function ProfilePage() {
     }
   };
 
+  const handleAvatarChange = async (e) => {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      setMsg('⚠️ حجم الصورة يجب ألا يتجاوز 5MB');
+      return;
+    }
+    const formData = new FormData();
+    formData.append('profile_image', file);
+    setAvatarUploading(true);
+    try {
+      await authService.uploadAvatar(formData);
+      await dispatch(fetchProfile());
+      setMsg('✅ تم تحديث الصورة الشخصية بنجاح');
+    } catch (err) {
+      setMsg('⚠️ تعذر رفع الصورة، تأكد أنها صورة صالحة');
+    } finally {
+      setAvatarUploading(false);
+    }
+  };
+
   const openEdit = () => {
     setEditForm({ first_name: user?.first_name || '', last_name: user?.last_name || '', phone: user?.phone || '' });
     setEditOpen(true);
@@ -126,9 +151,31 @@ function ProfilePage() {
       <Grid container spacing={3}>
         <Grid item xs={12} md={4}>
           <Paper sx={{ p: 4, textAlign: 'center', borderRadius: 4 }}>
-            <Avatar sx={{ width: 110, height: 110, bgcolor: 'linear-gradient(135deg,#4a90d9,#7c6df0)', fontSize: 42, fontWeight: 800, margin: '0 auto 16px', boxShadow: '0 8px 25px rgba(74,144,217,0.4)' }}>
-              {initials}
-            </Avatar>
+            <Box sx={{ position: 'relative', display: 'inline-flex', mb: 2 }}>
+              <Avatar
+                src={user?.profile_image || undefined}
+                sx={{ width: 110, height: 110, bgcolor: '#4a90d9', fontSize: 42, fontWeight: 800, margin: '0 auto', boxShadow: '0 8px 25px rgba(74,144,217,0.4)', '& .MuiAvatar-img': { objectFit: 'cover' } }}
+              >
+                {initials}
+              </Avatar>
+              <Box
+                component="span"
+                onClick={() => avatarInputRef.current && avatarInputRef.current.click()}
+                sx={{
+                  position: 'absolute', bottom: 0, right: 0,
+                  width: 34, height: 34, borderRadius: '50%',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  bgcolor: '#4a90d9', color: '#fff', cursor: 'pointer',
+                  border: '3px solid #fff', transition: 'all 0.2s',
+                  boxShadow: '0 3px 10px rgba(0,0,0,0.25)',
+                  '&:hover': { bgcolor: '#7c6df0', transform: 'scale(1.1)' },
+                }}
+                title="تغيير الصورة"
+              >
+                {avatarUploading ? <CircularProgress size={16} sx={{ color: '#fff' }} /> : <PhotoCameraIcon sx={{ fontSize: 18 }} />}
+              </Box>
+              <input ref={avatarInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleAvatarChange} />
+            </Box>
             <Typography variant="h5" sx={{ fontWeight: 800, color: '#2d3748' }}>{fullName}</Typography>
             <Typography variant="body2" sx={{ color: '#718096', mb: 2 }}>@{user?.username}</Typography>
             {user?.email_verified ? (

@@ -41,7 +41,7 @@ function DashboardPage() {
         ) : (
           <Grid container spacing={3}>
             {stats.map((stat, i) => (
-              <Grid item xs={12} sm={6} md={3} key={stat.label} className="dash-fade" sx={{ animationDelay: `${0.08 + i * 0.08}s` }}>
+              <Grid item xs={12} md={6} lg={4} xl={3} key={stat.label} className="dash-fade" sx={{ animationDelay: `${0.08 + i * 0.08}s` }}>
                 <Paper className="dash-card" sx={{ p: 3, textAlign: 'center', borderTop: `4px solid ${stat.color}` }}>
                   <Typography variant="h3" className="dash-stat" sx={{ fontWeight: 800 }}>{stat.value}</Typography>
                   <Typography variant="body2" className="dash-label">{stat.label}</Typography>

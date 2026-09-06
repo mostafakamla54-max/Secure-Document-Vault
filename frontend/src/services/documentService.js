@@ -3,7 +3,7 @@ import api from './api';
 export const documentService = {
   list: (params) => api.get('/documents/', { params }),
   get: (id) => api.get(`/documents/${id}/`),
-  create: (data) => {
+  create: (data, onUploadProgress) => {
     const formData = new FormData();
     Object.keys(data).forEach((key) => {
       if (data[key] !== undefined && data[key] !== null) {
@@ -12,6 +12,7 @@ export const documentService = {
     });
     return api.post('/documents/', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
+      onUploadProgress,
     });
   },
   update: (id, data) => api.patch(`/documents/${id}/`, data),

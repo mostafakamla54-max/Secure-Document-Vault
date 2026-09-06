@@ -18,6 +18,9 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import DownloadIcon from '@mui/icons-material/Download';
 import ShareIcon from '@mui/icons-material/Share';
 import LinkIcon from '@mui/icons-material/Link';
+import CameraAltIcon from '@mui/icons-material/CameraAlt';
+import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
+import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import DescriptionIcon from '@mui/icons-material/Description';
 import ImageIcon from '@mui/icons-material/Image';
 import AudioIcon from '@mui/icons-material/Audiotrack';
@@ -41,6 +44,8 @@ function typeIcon(ext, mime) {
   return <InsertDriveFileIcon style={{ color: '#a5b4fc' }} />;
 }
 
+const ACCEPT_TYPES = '.pdf,.doc,.docx,.xls,.xlsx,.csv,.ppt,.pptx,.txt,.md,.rtf,.odt,.png,.jpg,.jpeg,.gif,.svg,.webp,.heic,.bmp,.mp3,.wav,.ogg,.flac,.aac,.m4a,.mp4,.avi,.mkv,.mov,.webm';
+
 function formatSize(bytes) {
   if (!bytes) return '-';
   const kb = bytes / 1024;
@@ -62,6 +67,7 @@ function DocumentListPage() {
   const [uploadForm, setUploadForm] = React.useState({ file: null, title: '', category: 'general', importance: 'normal', description: '' });
   const [shareDoc, setShareDoc] = React.useState(null);
   const [encDocId, setEncDocId] = React.useState(null);
+  const [uploadProgress, setUploadProgress] = React.useState(0);
 
   React.useEffect(() => {
     dispatch(fetchDocuments(filters));
@@ -74,12 +80,21 @@ function DocumentListPage() {
     }
   }, []);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, multiple: false });
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, multiple: false, accept: ACCEPT_TYPES });
+
+  const handlePickFile = (e) => {
+    const f = e.target.files && e.target.files[0];
+    if (f) {
+      setUploadForm((prev) => ({ ...prev, file: f, title: prev.title || f.name.replace(/\.[^.]+$/, '') }));
+    }
+    e.target.value = '';
+  };
 
   const handleUpload = async () => {
     setUploading(true);
     setUploadStatus('');
     setStatusMsg('');
+    setUploadProgress(0);
     try {
       const payload = { ...uploadForm };
       if (mode === 'link') {
@@ -90,16 +105,20 @@ function DocumentListPage() {
         payload.title = payload.title.trim() || url;
         payload.description = payload.description || url;
       }
-      const result = await dispatch(uploadDocument(payload));
+      const result = await dispatch(uploadDocument({ data: payload, onUploadProgress: (e) => {
+        if (e.total) setUploadProgress(Math.round((e.loaded * 100) / e.total));
+      } }));
       if (result.type === 'documents/upload/fulfilled') {
         const createdId = result.payload && (result.payload.id ?? result.payload.id);
         setUploadStatus('success');
+        setUploadProgress(100);
         setStatusMsg(mode === 'file' ? '✅ تم رفع الوثيقة وتشفيرها بـ AES-256-GCM' : '✅ تم حفظ الرابط وتشفيره');
         setTimeout(() => {
           setOpen(false);
           setUploadStatus('');
           setStatusMsg('');
           setUploadForm({ file: null, title: '', category: 'general', importance: 'normal', description: '' });
+          setUploadProgress(0);
           if (createdId) setEncDocId(createdId);
         }, 700);
       } else {
@@ -111,6 +130,7 @@ function DocumentListPage() {
       setStatusMsg('⚠️ حدث خطأ أثناء الرفع');
     } finally {
       setUploading(false);
+      setUploadProgress((p) => (p === 100 ? p : 0));
     }
   };
 
@@ -187,9 +207,9 @@ function DocumentListPage() {
 
   return (
     <Layout>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
         <Typography variant="h4" className="page-title">📄 وثائقي</Typography>
-        <Button variant="contained" className="btn-primary btn-pulse" startIcon={<UploadFileIcon />} onClick={() => setOpen(true)}>
+        <Button variant="contained" className="btn-primary btn-pulse" startIcon={<UploadFileIcon />} onClick={() => setOpen(true)} sx={{ width: { xs: '100%', sm: 'auto' }, justifyContent: 'center' }}>
           رفع ملف / رابط
         </Button>
       </Box>
@@ -247,13 +267,28 @@ function DocumentListPage() {
           </Tabs>
 
           {mode === 'file' ? (
+            <>
+              <Box className="sv-upload-sources" sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 1.5, mb: 2 }}>
+                <Button component="label" variant="outlined" startIcon={<CameraAltIcon />} sx={{ flex: 1, fontWeight: 700, minHeight: { xs: 48, sm: 44 } }}>
+                  📷 كاميرا الجهاز
+                  <input type="file" hidden accept="image/*,video/*" capture="environment" onChange={handlePickFile} />
+                </Button>
+                <Button component="label" variant="outlined" startIcon={<PhotoLibraryIcon />} sx={{ flex: 1, fontWeight: 700, minHeight: { xs: 48, sm: 44 } }}>
+                  🖼️ المعرض
+                  <input type="file" hidden accept="image/*,video/*" onChange={handlePickFile} />
+                </Button>
+                <Button component="label" variant="outlined" startIcon={<FolderOpenIcon />} sx={{ flex: 1, fontWeight: 700, minHeight: { xs: 48, sm: 44 } }}>
+                  📁 مدير الملفات
+                  <input type="file" hidden accept={ACCEPT_TYPES} onChange={handlePickFile} />
+                </Button>
+              </Box>
             <Box {...getRootProps()} sx={{
               border: `2px dashed ${isDragActive ? '#4a90d9' : '#cbd5e0'}`,
               borderRadius: 3, p: 4, textAlign: 'center', mb: 2, cursor: 'pointer',
               transition: 'all 0.3s ease',
               background: isDragActive ? '#f0f8ff' : '#ffffff',
             }}>
-              <input {...getInputProps()} />
+              <input {...getInputProps({ accept: ACCEPT_TYPES })} />
               <Typography sx={{ fontSize: 44 }}>📁</Typography>
               <Typography sx={{ color: '#2d3748', fontWeight: 600 }}>
                 {uploadForm.file ? uploadForm.file.name : 'اسحب الملف هنا أو انقر للاختيار'}
@@ -270,6 +305,7 @@ function DocumentListPage() {
                 </Box>
               )}
             </Box>
+            </>
           ) : (
             <TextField
               label="رابط الموقع (مثال: https://whatsapp.com)"
@@ -283,8 +319,10 @@ function DocumentListPage() {
 
           {uploading && (
             <Box sx={{ mb: 2 }}>
-              <LinearProgress sx={{ height: 8, borderRadius: 4, '& .MuiLinearProgress-bar': { background: 'linear-gradient(90deg,#00d2ff,#3a7bd5)' } }} />
-              <Typography variant="caption" sx={{ color: 'rgba(45,55,72,0.6)' }}>جاري الرفع والتشفير الآمن...</Typography>
+              <LinearProgress variant={uploadProgress > 0 ? 'determinate' : 'indeterminate'} value={uploadProgress} sx={{ height: 10, borderRadius: 5, '& .MuiLinearProgress-bar': { background: 'linear-gradient(90deg,#00d2ff,#3a7bd5)' } }} />
+              <Typography variant="caption" sx={{ color: 'rgba(45,55,72,0.6)', mt: 0.5, display: 'block', textAlign: 'center', fontWeight: 700 }}>
+                {uploadProgress > 0 ? `جاري الرفع والتشفير الآمن... ${uploadProgress}%` : 'جاري الرفع والتشفير الآمن...'}
+              </Typography>
             </Box>
           )}
 
@@ -326,6 +364,9 @@ function DocumentListPage() {
           </Box>
 
           <Typography variant="caption" sx={{ display: 'block', mt: 2, color: '#b7791f', textAlign: 'center', fontWeight: 700 }}>
+            ⚡ ارفع من أي جهاز (جوال/تابلت/لابتوب) — الحجم الأقصى 20MB
+          </Typography>
+          <Typography variant="caption" sx={{ display: 'block', mt: 1, color: '#b7791f', textAlign: 'center', fontWeight: 700 }}>
             🔒 سيتم تشفير المحتوى بحماية AES-256-GCM قبل التخزين
           </Typography>
         </DialogContent>
