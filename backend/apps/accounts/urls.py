@@ -18,6 +18,7 @@ from .views_ai import AiSettingsView
 from .twofa import (
     TwoFactorDisableView,
     TwoFactorEnableView,
+    TwoFactorLoginView,
     TwoFactorSetupView,
     TwoFactorStatusView,
 )
@@ -30,6 +31,7 @@ urlpatterns = [
     path('register/', RegisterView.as_view(), name='register'),
     path('verify-email/<str:token>/', VerifyEmailView.as_view(), name='verify-email'),
     path('login/', LoginView.as_view(), name='login'),
+    path('login/2fa/', TwoFactorLoginView.as_view(), name='login-2fa'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('refresh/', TokenRefreshView.as_view(), name='token-refresh'),
     path('profile/', ProfileView.as_view(), name='profile'),

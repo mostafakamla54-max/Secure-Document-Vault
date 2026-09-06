@@ -25,6 +25,28 @@ export const loginUser = createAsyncThunk(
   async (credentials, { rejectWithValue }) => {
     try {
       const response = await authService.login(credentials);
+      if (response.data.requires_2fa) {
+        return { ...response.data, user: null };
+      }
+      localStorage.setItem('access_token', response.data.access);
+      localStorage.setItem('refresh_token', response.data.refresh);
+      const profileRes = await authService.getProfile();
+      return { ...response.data, user: profileRes.data };
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+export const login2faUser = createAsyncThunk(
+  'auth/login2fa',
+  async (code, { getState, rejectWithValue }) => {
+    try {
+      const twofaToken = getState().auth.pending2fa;
+      if (!twofaToken) {
+        return rejectWithValue('الجلسة منتهية، سجّل الدخول من جديد.');
+      }
+      const response = await authService.login2fa({ twofa_token: twofaToken, code });
       localStorage.setItem('access_token', response.data.access);
       localStorage.setItem('refresh_token', response.data.refresh);
       const profileRes = await authService.getProfile();
@@ -53,6 +75,7 @@ const initialState = {
   isAuthenticated: false,
   loading: false,
   error: null,
+  pending2fa: null,
   themeMode: localStorage.getItem('theme_mode') || 'light',
   lang: localStorage.getItem('app_lang') || 'ar',
 };
@@ -65,11 +88,15 @@ const authSlice = createSlice({
       state.user = null;
       state.token = null;
       state.isAuthenticated = false;
+      state.pending2fa = null;
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
     },
     clearError: (state) => {
       state.error = null;
+    },
+    clearPending2fa: (state) => {
+      state.pending2fa = null;
     },
     toggleTheme: (state) => {
       state.themeMode = state.themeMode === 'dark' ? 'light' : 'dark';
@@ -88,8 +115,16 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.token = action.payload.access;
-        state.user = action.payload.user || null;
+        const payload = action.payload;
+        if (payload.requires_2fa) {
+          state.pending2fa = payload.twofa_token || null;
+          state.user = null;
+          state.isAuthenticated = false;
+          return;
+        }
+        state.pending2fa = null;
+        state.token = payload.access;
+        state.user = payload.user || null;
         state.isAuthenticated = true;
       })
       .addCase(loginUser.rejected, (state, action) => {
@@ -99,6 +134,25 @@ const authSlice = createSlice({
           (payload && typeof payload === 'object' && payload.message) ||
           (typeof payload === 'string' && payload) ||
           'بيانات الدخول غير صحيحة';
+      })
+      .addCase(login2faUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(login2faUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.pending2fa = null;
+        state.token = action.payload.access;
+        state.user = action.payload.user || null;
+        state.isAuthenticated = true;
+      })
+      .addCase(login2faUser.rejected, (state, action) => {
+        state.loading = false;
+        const payload = action.payload;
+        state.error =
+          (payload && typeof payload === 'object' && payload.message) ||
+          (typeof payload === 'string' && payload) ||
+          'الرمز غير صحيح';
       })
       .addCase(fetchProfile.pending, (state) => {
         state.loading = true;
@@ -115,5 +169,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout, clearError, toggleTheme, toggleLang } = authSlice.actions;
+export const { logout, clearError, clearPending2fa, toggleTheme, toggleLang } = authSlice.actions;
 export default authSlice.reducer;

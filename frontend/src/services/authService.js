@@ -3,6 +3,7 @@ import api from './api';
 export const authService = {
   register: (data) => api.post('/accounts/register/', data),
   login: (data) => api.post('/accounts/login/', data),
+  login2fa: (data) => api.post('/accounts/login/2fa/', data),
   logout: (data) => api.post('/accounts/logout/', data),
   getProfile: () => api.get('/accounts/profile/'),
   updateProfile: (data) => api.patch('/accounts/profile/', data),

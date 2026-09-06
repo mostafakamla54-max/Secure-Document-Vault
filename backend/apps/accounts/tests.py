@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.utils import timezone
+from rest_framework.test import APIClient
 
 from .models import ActiveSession
 from .validators import validate_password_strength
@@ -60,3 +61,55 @@ class ActiveSessionTests(TestCase):
             expires_at=timezone.now() - timezone.timedelta(minutes=1),
         )
         self.assertTrue(session.is_expired)
+
+
+class TwoFactorLoginTests(TestCase):
+    def setUp(self):
+        import pyotp
+        self.user = User.objects.create_user(
+            username='twouser', email='two@example.com', password='StrongPass1!'
+        )
+        self.user.two_factor_secret = pyotp.random_base32()
+        self.user.two_factor_enabled = True
+        self.user.save()
+        self.client = APIClient()
+
+    def test_login_requires_2fa_challenge(self):
+        response = self.client.post('/api/v1/accounts/login/', {
+            'username': 'twouser', 'password': 'StrongPass1!'
+        }, format='json')
+        self.assertEqual(response.status_code, 200, response.data)
+        self.assertTrue(response.data['requires_2fa'])
+        self.assertTrue(response.data['twofa_token'])
+        self.assertNotIn('access', response.data)
+
+    def test_login_2fa_wrong_code_rejected(self):
+        response = self.client.post('/api/v1/accounts/login/', {
+            'username': 'twouser', 'password': 'StrongPass1!'
+        }, format='json')
+        bad = self.client.post('/api/v1/accounts/login/2fa/', {
+            'twofa_token': response.data['twofa_token'], 'code': '000000'
+        }, format='json')
+        self.assertEqual(bad.status_code, 401)
+
+    def test_login_2fa_correct_code_returns_tokens(self):
+        import pyotp
+        totp = pyotp.TOTP(self.user.two_factor_secret)
+        challenge = self.client.post('/api/v1/accounts/login/', {
+            'username': 'twouser', 'password': 'StrongPass1!'
+        }, format='json').data
+        okay = self.client.post('/api/v1/accounts/login/2fa/', {
+            'twofa_token': challenge['twofa_token'], 'code': totp.now()
+        }, format='json')
+        self.assertEqual(okay.status_code, 200, okay.data)
+        self.assertTrue(okay.data['access'])
+        self.assertTrue(okay.data['refresh'])
+
+    def test_login_without_2fa_returns_tokens_directly(self):
+        self.user.two_factor_enabled = False
+        self.user.save()
+        response = self.client.post('/api/v1/accounts/login/', {
+            'username': 'twouser', 'password': 'StrongPass1!'
+        }, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.data['access'])

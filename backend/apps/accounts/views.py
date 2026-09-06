@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import check_password
+from django.core.signing import TimestampSigner
 from django.utils import timezone
 from rest_framework import generics, permissions, status, viewsets
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
@@ -31,6 +32,7 @@ from .services import (
 )
 from utils.helpers import get_client_ip, standard_response
 from middleware.rate_limit import rate_limit
+from apps.audit.models import AuditLog
 
 User = get_user_model()
 
@@ -110,6 +112,21 @@ class LoginView(TokenObtainPairView):
             )
 
         reset_failed_login(user)
+        AuditLog.objects.log(
+            actor=user, action='AUTH_LOGIN_OK',
+            object_type='account', object_id=user.id,
+            detail='Credentials verified (password)',
+        )
+        from .twofa import make_twofa_challenge
+        if user.two_factor_enabled:
+            challenge = make_twofa_challenge(user)
+            AuditLog.objects.log(
+                actor=user, action='AUTH_2FA_CHALLENGE',
+                object_type='account', object_id=user.id,
+                detail='2FA challenge issued',
+            )
+            return Response({'requires_2fa': True, 'twofa_token': challenge})
+
         refresh = LoginSerializer.get_token(user)
         data = {
             'refresh': str(refresh),
@@ -181,6 +198,7 @@ class PasswordResetRequestView(APIView):
 class PasswordResetConfirmView(APIView):
     permission_classes = [permissions.AllowAny]
 
+    @rate_limit(calls=10, period=60)
     def post(self, request):
         serializer = PasswordResetConfirmSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)

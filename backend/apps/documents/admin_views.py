@@ -6,8 +6,15 @@ from rest_framework.views import APIView
 
 from apps.accounts.models import User
 from apps.audit.models import AuditLog
+from middleware.rate_limit import rate_limit
 
 from .models import Document
+
+
+def _to_bool(value):
+    if isinstance(value, bool):
+        return value
+    return str(value).lower() in ('1', 'true', 'yes', 'on')
 
 
 class IsAdmin(permissions.BasePermission):
@@ -55,11 +62,16 @@ class AdminUsersView(APIView):
         user = get_object_or_404(User, pk=pk)
         is_active = request.data.get('is_active')
         if is_active is not None:
-            user.is_active = bool(is_active)
+            user.is_active = _to_bool(is_active)
         is_staff = request.data.get('is_staff')
         if is_staff is not None:
-            user.is_staff = bool(is_staff)
+            user.is_staff = _to_bool(is_staff)
         user.save()
+        AuditLog.objects.log(
+            actor=request.user, action='ADMIN_USER_UPDATE',
+            object_type='user', object_id=user.id,
+            detail='Admin updated account flags',
+        )
         return Response({'detail': 'User updated.'})
 
 
@@ -81,6 +93,7 @@ class AdminDocumentDecryptView(APIView):
     """Decrypt a document's content for admin inspection (audited)."""
     permission_classes = [IsAdmin]
 
+    @rate_limit(calls=30, period=60)
     def post(self, request, pk):
         doc = get_object_or_404(Document, pk=pk)
         content = doc.decrypt_content()

@@ -4,16 +4,19 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import PersonIcon from '@mui/icons-material/Person';
 import LockIcon from '@mui/icons-material/Lock';
+import PinIcon from '@mui/icons-material/Pin';
 import GoogleIcon from '@mui/icons-material/Google';
 import GitHubIcon from '@mui/icons-material/GitHub';
-import { loginUser, clearError } from '../../store/slices/authSlice';
+import { loginUser, login2faUser, clearError } from '../../store/slices/authSlice';
 import AnimatedBackground from '../common/AnimatedBackground';
 
 function LoginPage() {
   const [form, setForm] = React.useState({ username: '', password: '' });
+  const [code, setCode] = React.useState('');
+  const [step, setStep] = React.useState('credentials');
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { loading, error } = useSelector((state) => state.auth);
+  const { loading, error, pending2fa } = useSelector((state) => state.auth);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -24,7 +27,26 @@ function LoginPage() {
     e.preventDefault();
     const result = await dispatch(loginUser(form));
     if (result.type === 'auth/login/fulfilled') {
+      if (result.payload.requires_2fa) {
+        setStep('otp');
+      } else {
+        navigate('/');
+      }
+    }
+  };
+
+  const handleOtpSubmit = async (e) => {
+    e.preventDefault();
+    const result = await dispatch(login2faUser(code));
+    if (result.type === 'auth/login2fa/fulfilled') {
       navigate('/');
+    }
+  };
+
+  const handleBack = () => {
+    if (step === 'otp' && pending2fa) {
+      dispatch(clearError());
+      setStep('credentials');
     }
   };
 
@@ -38,8 +60,12 @@ function LoginPage() {
           <div className="lux-brand-sub">✨ Your Digital Fortress ✨</div>
         </div>
 
-        <h1 className="lux-title">🌟 مرحباً بعودتك!</h1>
-        <p className="lux-subtitle">سجّل دخولك لعالمك الآمن</p>
+        <h1 className="lux-title">{step === 'otp' ? '🔐 رمز التحقق' : '🌟 مرحباً بعودتك!'}</h1>
+        <p className="lux-subtitle">
+          {step === 'otp'
+            ? 'أدخل الرمز المكوّن من 6 أرقام من تطبيق المصادقة (2FA)'
+            : 'سجّل دخولك لعالمك الآمن'}
+        </p>
 
         {error && (
           <Alert severity="error" sx={{ mb: 2, borderRadius: 3 }}>
@@ -47,70 +73,123 @@ function LoginPage() {
           </Alert>
         )}
 
-        <form onSubmit={handleSubmit}>
-          <div className="auth-field">
-            <label>👤 اسم المستخدم</label>
-            <TextField
-              name="username"
-              value={form.username}
-              onChange={handleChange}
+        {step === 'otp' ? (
+          <form onSubmit={handleOtpSubmit}>
+            <div className="auth-field">
+              <label>🔢 رمز التحقق 2FA</label>
+              <TextField
+                name="code"
+                value={code}
+                onChange={(e) => {
+                  setCode(e.target.value.replace(/\D/g, '').slice(0, 6));
+                  dispatch(clearError());
+                }}
+                fullWidth
+                required
+                autoFocus
+                inputMode="numeric"
+                variant="outlined"
+                placeholder="000000"
+                autoComplete="one-time-code"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <PinIcon />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </div>
+
+            <Button
+              type="submit"
+              variant="contained"
               fullWidth
-              required
-              variant="outlined"
-              placeholder="أدخل اسم المستخدم"
-              autoCapitalize="none"
-              autoCorrect="off"
-              spellCheck={false}
-              autoComplete="username"
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <PersonIcon />
-                  </InputAdornment>
-                ),
-              }}
-            />
-          </div>
+              disabled={loading || code.length < 6}
+              className="lux-btn"
+              sx={{ mt: 1, py: 1.5, fontSize: 17 }}
+            >
+              {loading ? <CircularProgress size={24} color="inherit" /> : '🛡️ تحقق ودخول'}
+            </Button>
 
-          <div className="auth-field">
-            <label>🔑 كلمة المرور</label>
-            <TextField
-              name="password"
-              type="password"
-              value={form.password}
-              onChange={handleChange}
+            <Typography variant="body2" sx={{ mt: 2, textAlign: 'center', color: '#cbb26a' }}>
+              {pending2fa ? (
+                <span onClick={handleBack} style={{ cursor: 'pointer', textDecoration: 'underline' }}>
+                  ↩️ العودة إلى الدخول
+                </span>
+              ) : (
+                <Link to="/login" className="lux-link">
+                  ↩️ العودة إلى الدخول
+                </Link>
+              )}
+            </Typography>
+          </form>
+        ) : (
+          <form onSubmit={handleSubmit}>
+            <div className="auth-field">
+              <label>👤 اسم المستخدم</label>
+              <TextField
+                name="username"
+                value={form.username}
+                onChange={handleChange}
+                fullWidth
+                required
+                variant="outlined"
+                placeholder="أدخل اسم المستخدم"
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck={false}
+                autoComplete="username"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <PersonIcon />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </div>
+
+            <div className="auth-field">
+              <label>🔑 كلمة المرور</label>
+              <TextField
+                name="password"
+                type="password"
+                value={form.password}
+                onChange={handleChange}
+                fullWidth
+                required
+                variant="outlined"
+                placeholder="أدخل كلمة المرور"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <LockIcon />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </div>
+
+            <div className="lux-row">
+              <label>
+                <input type="checkbox" /> ☑️ تذكرني
+              </label>
+              <span className="lux-forgot">🔗 نسيت كلمة المرور؟</span>
+            </div>
+
+            <Button
+              type="submit"
+              variant="contained"
               fullWidth
-              required
-              variant="outlined"
-              placeholder="أدخل كلمة المرور"
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <LockIcon />
-                  </InputAdornment>
-                ),
-              }}
-            />
-          </div>
-
-          <div className="lux-row">
-            <label>
-              <input type="checkbox" /> ☑️ تذكرني
-            </label>
-            <span className="lux-forgot">🔗 نسيت كلمة المرور؟</span>
-          </div>
-
-          <Button
-            type="submit"
-            variant="contained"
-            fullWidth
-            disabled={loading}
-            className="lux-btn"
-            sx={{ mt: 1, py: 1.5, fontSize: 17 }}
-          >
-            {loading ? <CircularProgress size={24} color="inherit" /> : '🚀 تسجيل الدخول'}
-          </Button>
-        </form>
+              disabled={loading}
+              className="lux-btn"
+              sx={{ mt: 1, py: 1.5, fontSize: 17 }}
+            >
+              {loading ? <CircularProgress size={24} color="inherit" /> : '🚀 تسجيل الدخول'}
+            </Button>
+          </form>
+        )}
 
         <div className="lux-divider">أو المتابعة عبر</div>
 

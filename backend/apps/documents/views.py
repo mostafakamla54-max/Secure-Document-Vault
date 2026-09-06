@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.audit.models import AuditLog
+from middleware.rate_limit import rate_limit
 
 from .models import Document, DocumentTag, DocumentVersion
 from .serializers import (
@@ -31,6 +32,10 @@ class DocumentViewSet(viewsets.ModelViewSet):
     parser_classes = [MultiPartParser, FormParser]
     filterset_fields = ['category', 'importance', 'is_archived', 'is_favorite']
     search_fields = ['title', 'description']
+
+    @rate_limit(calls=120, period=60)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
         return Document.objects.filter(user=self.request.user, is_deleted=False)
@@ -91,6 +96,7 @@ class DocumentDownloadView(APIView):
     """Download the decrypted document content (audited and counted)."""
     permission_classes = [permissions.IsAuthenticated]
 
+    @rate_limit(calls=60, period=60)
     def get(self, request, pk):
         doc = get_object_or_404(
             Document, pk=pk, user=request.user, is_deleted=False
@@ -195,6 +201,7 @@ class DocumentAiAnalyzeView(APIView):
     """AI analysis of a document's decrypted content (audited)."""
     permission_classes = [permissions.IsAuthenticated]
 
+    @rate_limit(calls=10, period=60)
     def post(self, request, pk):
         doc = get_object_or_404(
             Document, pk=pk, user=request.user, is_deleted=False
@@ -228,6 +235,7 @@ class DocumentEncryptedTextView(APIView):
     """
     permission_classes = [permissions.IsAuthenticated]
 
+    @rate_limit(calls=30, period=60)
     def get(self, request, pk):
         doc = get_object_or_404(
             Document, pk=pk, user=request.user, is_deleted=False
@@ -273,6 +281,7 @@ class DocumentDecryptTextView(APIView):
     """
     permission_classes = [permissions.IsAuthenticated]
 
+    @rate_limit(calls=30, period=60)
     def post(self, request, pk):
         doc = get_object_or_404(
             Document, pk=pk, user=request.user, is_deleted=False

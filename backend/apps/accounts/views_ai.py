@@ -37,12 +37,15 @@ class AiSettingsView(APIView):
                     getattr(request.user, 'is_staff', False))
 
     def get(self, request):
-        return Response({
-            'is_admin': self._is_admin(request),
-            'openai_configured': bool(os.environ.get('OPENAI_API_KEY', '')),
-            'claude_configured': bool(os.environ.get('CLAUDE_API_KEY', '')),
+        is_admin = self._is_admin(request)
+        payload = {
+            'is_admin': is_admin,
             'note': 'Keys are stored locally in backend/.env and never returned in full.',
-        })
+        }
+        if is_admin:
+            payload['openai_configured'] = bool(os.environ.get('OPENAI_API_KEY', ''))
+            payload['claude_configured'] = bool(os.environ.get('CLAUDE_API_KEY', ''))
+        return Response(payload)
 
     def post(self, request):
         if not self._is_admin(request):

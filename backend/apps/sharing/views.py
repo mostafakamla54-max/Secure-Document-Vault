@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 
 from apps.audit.models import AuditLog
 from apps.documents.models import Document
+from middleware.rate_limit import rate_limit
 
 from .models import DocumentShare, SharedDocumentAccessLog, ShareInvitation
 from .serializers import (
@@ -160,6 +161,7 @@ class PublicShareAccessView(APIView):
             os_name = 'Linux'
         return {'user_agent': ua[:400], 'device': device, 'browser': browser, 'os': os_name}
 
+    @rate_limit(calls=30, period=60)
     def get(self, request, token):
         share = get_object_or_404(DocumentShare, access_token=token)
         if not share.can_access():
