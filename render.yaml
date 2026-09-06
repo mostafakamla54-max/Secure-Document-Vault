@@ -13,7 +13,7 @@ services:
     plan: free
     rootDir: .
     dockerfilePath: ./backend/Dockerfile
-    healthCheckPath: /api/v1/accounts/login/
+    healthCheckPath: /
     envVars:
       - key: PORT
         value: 8000
