@@ -3,9 +3,10 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from rest_framework.test import APIClient
 
-from .encryption import decrypt_bytes, encrypt_bytes
+from .encryption import decrypt_bytes, encrypt_bytes, wrap_key, unwrap_key, _master_key
 from .models import Document
 from .serializers import MAX_UPLOAD_SIZE
+from .ai_service import analyze_document
 
 User = get_user_model()
 
@@ -26,6 +27,17 @@ class EncryptionTests(TestCase):
         corrupted = bytes([ciphertext[0] ^ 0xFF]) + ciphertext[1:]
         with self.assertRaises(Exception):
             decrypt_bytes(corrupted, key, nonce)
+
+    def test_key_wrapping(self):
+        key = b'K' * 32
+        wrapped = wrap_key(key)
+        if _master_key():
+            self.assertEqual(len(wrapped), 62)  # V2 + nonce + key + tag
+            self.assertNotEqual(wrapped, key)
+            self.assertEqual(unwrap_key(wrapped), key)
+            with self.assertRaises(Exception):
+                unwrap_key(wrapped[:-1] + bytes([wrapped[-1] ^ 0xFF]))  # tag tamper
+        self.assertEqual(unwrap_key(key), key)  # legacy raw keys pass through
 
 
 class DocumentModelTests(TestCase):
@@ -48,6 +60,31 @@ class DocumentModelTests(TestCase):
         self.assertTrue(doc.is_deleted)
         doc.restore()
         self.assertFalse(doc.is_deleted)
+
+
+class AiAnalysisTests(TestCase):
+    def test_local_analysis_full_shape(self):
+        text = (
+            'عقد عمل للتوظيف في شركة التقنية لمدة عام واحد، '
+            'البريد jane@example.com ورقم الجوال 0551234567، '
+            'وثيقة تخص الموظف الجديد.'
+        )
+        result = analyze_document(text, title='عقد عمل', category='work')
+        self.assertEqual(result['provider'], 'local')
+        self.assertEqual(result['language'], 'mixed')
+        self.assertEqual(result['risk_level'], 'low')
+        self.assertGreater(result['risk_score'], 0)
+        self.assertIn('word_count', result)
+        self.assertIn('top_terms', result)
+        self.assertIn('entity_breakdown', result)
+        self.assertTrue(any(e['type_en'] == 'Email address' for e in result['entity_breakdown']))
+        self.assertTrue(any(e['type_en'] == 'Possible phone number' for e in result['entity_breakdown']))
+
+    def test_local_analysis_english(self):
+        result = analyze_document('Meeting notes about the quarterly budget and taxes.', title='Notes')
+        self.assertEqual(result['provider'], 'local')
+        self.assertEqual(result['language'], 'english')
+        self.assertEqual(result['category_suggestion'], 'مالي')
 
 
 class DocumentUploadTests(TestCase):

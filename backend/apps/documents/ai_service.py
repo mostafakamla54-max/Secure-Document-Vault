@@ -77,38 +77,160 @@ def _call_claude(prompt, max_tokens=700):
     return data['content'][0]['text'].strip()
 
 
-def _local_analysis(text, title, category):
-    text_lower = (text or '').lower()
-    words = re.findall(r'[\w\u0600-\u06FF]{3,}', text_lower)
-    keywords = sorted(set(words))[:10]
-    sensitive = []
+_AR_STOP = {
+    'عن', 'في', 'من', 'على', 'إلى', 'الى', 'أن', 'ان', 'إن', 'أنه', 'أنها',
+    'هذا', 'هذه', 'ذلك', 'التي', 'الذي', 'مثل', 'كل', 'مع', 'هو', 'هي',
+    'كان', 'كانت', 'يكون', 'ليس', 'ثم', 'و', 'أو', 'او', 'قد', 'لا', 'ما',
+    'لم', 'له', 'لها', 'لهم', 'بين', 'عند', 'حسب', 'بعض', 'أي', 'اي', 'غير',
+    'منها', 'بها', 'إلا', 'يتم', 'تم', 'فيه', 'فيها', 'كلها',
+}
+
+_EN_STOP = {
+    'the', 'and', 'for', 'with', 'that', 'this', 'from', 'have', 'has',
+    'not', 'are', 'was', 'were', 'will', 'would', 'can', 'could', 'should',
+    'your', 'you', 'our', 'their', 'its', 'they', 'them', 'about', 'into',
+    'over', 'after', 'before', 'also', 'such', 'only', 'but', 'out', 'all',
+    'each', 'when', 'what', 'which', 'there', 'here', 'then', 'than', 'very',
+    'just', 'more', 'most',
+}
+
+_CATEGORY_LEXICON = {
+    'financial': ['ريال', 'درهم', 'دولار', 'سعر', 'فاتورة', 'حساب', 'راتب',
+                  'ضريبة', 'قرض', 'بنك', 'دفع', 'money', 'invoice', 'account',
+                  'salary', 'tax', 'price', 'payment', 'bank', 'loan'],
+    'medical': ['صحي', 'مريض', 'تشخيص', 'علاج', 'عيادة', 'مستشفى', 'دواء',
+                'وصفة', 'طبيب', 'جراحة', 'medical', 'hospital', 'diagnosis',
+                'patient', 'clinic', 'doctor', 'surgery', 'medication'],
+    'legal': ['عقد', 'قانون', 'محكمة', 'قضية', 'محامي', 'غرامة', 'شرط',
+              'اتفاقية', 'التزام', 'contract', 'law', 'court', 'legal',
+              'penalty', 'lawyer', 'agreement', 'clause'],
+    'education': ['جامعة', 'طالب', 'مدرسة', 'منهج', 'اختبار', 'محاضرة',
+                  'شهادة', 'معلم', 'أستاذ', 'university', 'student', 'school',
+                  'exam', 'course', 'teacher', 'professor', 'certificate'],
+    'personal': ['عنوان', 'ميلاد', 'زواج', 'جواز', 'هوية', 'national',
+                 'address', 'passport', 'birth', 'id'],
+    'work': ['عمل', 'وظيفة', 'شركة', 'مشروع', 'موظف', 'مدير', 'work',
+             'company', 'employee', 'project', 'manager', 'job'],
+}
+
+_RISK_WEIGHTS = {
+    'Credit card number': 22,
+    'Password / key': 25,
+    'Email address': 12,
+    'IP Address': 15,
+    'Possible phone number': 10,
+}
+
+
+def _detect_language(text):
+    ar = sum(1 for c in text if '\u0600' <= c <= '\u06FF')
+    en = sum(1 for c in text if 'a' <= c.lower() <= 'z')
+    if ar and not en:
+        return 'arabic'
+    if en and not ar:
+        return 'english'
+    return 'mixed'
+
+
+def _extract_entities(text):
+    """Find every type of sensitive data (not just the first match)."""
+    found = {}
     for pattern, ar, en in SENSITIVE_PATTERNS:
-        m = re.search(pattern, text or '', re.IGNORECASE)
-        if m:
-            sensitive.append({'type_ar': ar, 'type_en': en, 'match': m.group(0)[:30]})
-            break
-    length = len(text or '')
+        matches = re.findall(pattern, text, flags=re.IGNORECASE)
+        if not matches:
+            continue
+        entry = found.setdefault(
+            ar, {'type_ar': ar, 'type_en': en, 'count': 0, 'examples': []}
+        )
+        entry['count'] += len(matches)
+        for m in matches:
+            if len(entry['examples']) < 3 and m not in entry['examples']:
+                entry['examples'].append(m[:40])
+    return list(found.values())
+
+
+def _category_score(text, category):
+    tl = (text or '').lower()
+    scores = {cat: sum(tl.count(w) for w in words)
+              for cat, words in _CATEGORY_LEXICON.items()}
+    if (category or '').lower() in scores:
+        scores[category.lower()] += 2
+    best = max(scores, key=scores.get)
+    return best if scores[best] > 0 else 'general'
+
+
+def _top_terms(text):
+    freq = {}
+    for t in re.findall(r'[\w\u0600-\u06FF]{3,}', text.lower()):
+        if len(t) < 3 or t in _AR_STOP or t in _EN_STOP:
+            continue
+        freq[t] = freq.get(t, 0) + 1
+    return sorted(freq.items(), key=lambda kv: (-kv[1], kv[0]))
+
+
+def _local_analysis(text, title, category):
+    text = text or ''
+    title = title or ''
+    length = len(text)
+    entities = _extract_entities(text)
+    risk = min(100, sum(_RISK_WEIGHTS.get(e['type_en'], 10) for e in entities))
+    risk_level = 'low' if risk < 30 else 'medium' if risk < 60 else 'high'
+    terms = _top_terms(text)
+    keywords = [t for t, _ in terms][:8]
+
     if length < 200:
-        summary = _AR['short']
+        descriptor = _AR['short']
     elif length < 2000:
-        summary = _AR['medium']
+        descriptor = _AR['medium']
     else:
-        summary = _AR['long']
-    cat_map = {
+        descriptor = _AR['long']
+
+    first_line = ''
+    for ln in text.splitlines():
+        ln = ln.strip()
+        if ln:
+            first_line = ln
+            break
+    if len(first_line) > 220:
+        first_line = first_line[:217] + '...'
+    summary = (title + ': ' if title else '') + first_line
+    summary = summary if summary else descriptor
+    if summary:
+        summary = (summary + ' ' + descriptor)[:320]
+
+    word_count = len(re.findall(r'[\w\u0600-\u06FF]+', text))
+    cat = _category_score(text, category)
+    cat_labels = {
         'legal': _AR['cat_legal'], 'financial': _AR['cat_fin'],
         'medical': _AR['cat_health'], 'education': _AR['cat_edu'],
         'personal': _AR['cat_personal'],
     }
-    suggestion = cat_map.get((category or '').lower()) or _AR['cat_general']
+    suggestion = (cat_labels.get(cat) or _AR['cat_general'])
+    if cat == 'work':
+        suggestion = _AR['cat_general']
+
+    sensitive_data = []
+    for e in entities:
+        for ex in e['examples']:
+            sensitive_data.append(
+                {'type_ar': e['type_ar'], 'type_en': e['type_en'], 'match': ex}
+            )
     return {
         'provider': 'local',
         'summary': summary,
-        'keywords': keywords[:8],
-        'sensitive_data': sensitive[:6],
-        'sensitive_count': len(sensitive),
+        'keywords': keywords,
+        'sensitive_data': sensitive_data[:6],
+        'sensitive_count': len(entities),
         'category_suggestion': suggestion,
         'has_ai_key': bool(_env('OPENAI_API_KEY')) or bool(_env('CLAUDE_API_KEY')),
         'note': _AR['local_note'],
+        'language': _detect_language(text),
+        'word_count': word_count,
+        'char_count': length,
+        'risk_score': risk,
+        'risk_level': risk_level,
+        'top_terms': [{'term': t, 'count': c} for t, c in terms[:12]],
+        'entity_breakdown': entities,
     }
 
 

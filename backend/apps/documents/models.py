@@ -3,7 +3,7 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 
-from .encryption import encrypt_bytes, decrypt_bytes, derive_key
+from .encryption import encrypt_bytes, decrypt_bytes, derive_key, wrap_key
 
 User = get_user_model()
 
@@ -76,11 +76,14 @@ class Document(models.Model):
         return decrypt_bytes(self.encrypted_file, key, self.nonce)
 
     def set_content(self, raw_bytes):
-        """Encrypt and store raw content with a fresh per-document key."""
+        """Encrypt and store raw content with a fresh per-document key.
+
+        The key is stored wrapped by the server-side master key when configured.
+        """
         key = derive_key()
         nonce, ciphertext, checksum = encrypt_bytes(raw_bytes, key)
         self.encrypted_file = ciphertext
-        self.key_material = key
+        self.key_material = wrap_key(key)
         self.nonce = nonce
         self.checksum = checksum
         self.file_size = len(raw_bytes)
