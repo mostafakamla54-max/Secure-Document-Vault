@@ -1,0 +1,8 @@
+# heavy / local-only paths — keep the Vercel upload small
+backend/
+frontend/node_modules/
+frontend/build/
+frontend/.vercel/
+.vercel/
+*.log
+Secure-Vault-AI-Pro/

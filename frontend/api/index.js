@@ -1,4 +1,4 @@
-const TUNNEL = 'https://usual-settings-britney-correspondence.trycloudflare.com';
+const TUNNEL = 'https://heater-relying-culture-portfolio.trycloudflare.com';
 
 const SKIP = new Set([
   'host', 'connection', 'content-length', 'accept-encoding', 'transfer-encoding', 'expect',
