@@ -1,4 +1,4 @@
-const TUNNEL = 'https://mirror-fin-lot-handles.trycloudflare.com';
+const TUNNEL = process.env.BACKEND_URL || 'https://secure-vault-api-production.up.railway.app';
 
 const SKIP = new Set([
   'host', 'connection', 'content-length', 'accept-encoding', 'transfer-encoding', 'expect',
