@@ -5,8 +5,9 @@ set -e
 echo "== Running migrations =="
 python manage.py migrate --noinput
 
-echo "== Collecting static files =="
-python manage.py collectstatic --noinput
+# Static files are served by the frontend CDN, not by Django. Skipping
+# collectstatic avoids manifest post-processing failures on missing .map files.
+echo "== Skipping collectstatic (frontend served by CDN) =="
 
 echo "== Creating superuser if fresh DB =="
 # Only create if SUPERVISOR_USERNAME/PASSWORD env are set AND a superuser doesn't exist.
