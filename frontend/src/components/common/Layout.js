@@ -10,6 +10,7 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import DescriptionIcon from '@mui/icons-material/Description';
 import ShareIcon from '@mui/icons-material/Share';
 import HistoryIcon from '@mui/icons-material/History';
+import BusinessIcon from '@mui/icons-material/Business';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import LogoutIcon from '@mui/icons-material/Logout';
 import PersonIcon from '@mui/icons-material/Person';
@@ -80,6 +81,7 @@ function Layout({ children }) {
     { text: t('\u0627\u0644\u0648\u062B\u0627\u0626\u0642', 'Documents'), icon: <DescriptionIcon />, path: '/documents' },
     { text: t('\u0627\u0644\u0645\u0634\u0627\u0631\u0643\u0629', 'Sharing'), icon: <ShareIcon />, path: '/sharing' },
     { text: t('\u0633\u062C\u0644 \u0627\u0644\u062A\u062F\u0642\u064A\u0642', 'Audit'), icon: <HistoryIcon />, path: '/audit' },
+    { text: t('\u0627\u0644\u0645\u0624\u0633\u0633\u0629', 'Organization'), icon: <BusinessIcon />, path: '/organization' },
     { text: t('\u0645\u0644\u0641\u064A \u0627\u0644\u0634\u062E\u0635\u064A', 'Profile'), icon: <PersonIcon />, path: '/profile' },
     ...(isAdmin ? [{ text: t('\u0644\u0648\u062D\u0629 \u0627\u0644\u0645\u062F\u064A\u0631', 'Admin'), icon: <AdminPanelSettingsIcon />, path: '/admin' }] : []),
   ];

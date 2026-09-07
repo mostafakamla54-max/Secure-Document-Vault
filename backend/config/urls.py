@@ -25,6 +25,7 @@ urlpatterns = [
     path('api/v1/documents/', include('apps.documents.urls')),
     path('api/v1/sharing/', include('apps.sharing.urls')),
     path('api/v1/audit/', include('apps.audit.urls')),
+    path('api/v1/organizations/', include('apps.organizations.urls')),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ]

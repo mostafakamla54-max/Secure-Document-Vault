@@ -12,6 +12,7 @@ import AuditLogPage from './components/audit/AuditLogPage';
 import ProfilePage from './components/profile/ProfilePage';
 import NotificationPage from './components/notifications/NotificationPage';
 import AdminPage from './components/admin/AdminPage';
+import OrganizationPage from './components/organization/OrganizationPage';
 import ProtectedRoute from './components/common/ProtectedRoute';
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
       <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
       <Route path="/notification" element={<ProtectedRoute><NotificationPage /></ProtectedRoute>} />
       <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
+      <Route path="/organization" element={<ProtectedRoute><OrganizationPage /></ProtectedRoute>} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

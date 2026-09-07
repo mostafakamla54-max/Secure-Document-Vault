@@ -9,6 +9,13 @@ User = get_user_model()
 
 
 class Document(models.Model):
+    organization = models.ForeignKey(
+        'organizations.Organization',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='documents',
+    )
     CATEGORY_CHOICES = [
         ('general', 'General'),
         ('personal', 'Personal'),

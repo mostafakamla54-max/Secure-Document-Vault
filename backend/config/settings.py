@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'apps.documents',
     'apps.sharing',
     'apps.audit',
+    'apps.organizations',
 ]
 
 MIDDLEWARE = [
