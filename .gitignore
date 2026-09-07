@@ -72,3 +72,4 @@ Thumbs.db
 
 # Stray template folder (not part of the project)
 Secure-Vault-AI-Pro/
+.vercel

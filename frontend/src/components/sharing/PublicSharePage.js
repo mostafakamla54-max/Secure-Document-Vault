@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, Paper, Chip, Button, CircularProgress, Alert } from '@mui/material';
+import { Box, Typography, Chip, Button, CircularProgress, Alert } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import LockIcon from '@mui/icons-material/Lock';
 import DownloadIcon from '@mui/icons-material/Download';

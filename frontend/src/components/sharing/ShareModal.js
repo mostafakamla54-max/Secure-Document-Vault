@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   Dialog, DialogTitle, DialogContent, DialogActions, Button, Box, Typography,
-  TextField, MenuItem, Select, InputLabel, FormControl, Chip, Alert, IconButton,
+  TextField, MenuItem, Select, InputLabel, FormControl, Chip, Alert,
   CircularProgress, Divider,
 } from '@mui/material';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';

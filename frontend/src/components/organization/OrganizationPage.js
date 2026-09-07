@@ -30,7 +30,6 @@ function OrganizationPage() {
   const [addUsername, setAddUsername] = React.useState('');
   const [addRole, setAddRole] = React.useState('member');
   const [inviteEmail, setInviteEmail] = React.useState('');
-  const [inviteRole, setInviteRole] = React.useState('member');
   const [selectedDoc, setSelectedDoc] = React.useState('');
 
   React.useEffect(() => {
@@ -146,7 +145,7 @@ function OrganizationPage() {
   const handleInvite = async () => {
     if (!inviteEmail.trim()) return;
     try {
-      await orgService.invite({ email: inviteEmail, role: inviteRole });
+      await orgService.invite({ email: inviteEmail, role: 'member' });
       flash('تم إرسال الدعوة');
       setInviteEmail('');
     } catch (err) {

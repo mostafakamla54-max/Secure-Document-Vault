@@ -38,16 +38,17 @@ function NotificationPage() {
   const { items, unreadCount } = useSelector((state) => state.notifications);
   const [loading, setLoading] = React.useState(true);
 
-  const load = async () => {
-    try {
-      const res = await authService.getNotifications();
-      dispatch(setNotifications(res.data));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  React.useEffect(() => { load(); }, []);
+  React.useEffect(() => {
+    const load = async () => {
+      try {
+        const res = await authService.getNotifications();
+        dispatch(setNotifications(res.data));
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, [dispatch]);
 
   const handleMarkAllRead = () => {
     dispatch(markAllRead());

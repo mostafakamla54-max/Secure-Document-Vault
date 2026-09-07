@@ -63,7 +63,7 @@ function ProfilePage() {
 
   const saveEdit = async () => {
     try {
-      const res = await authService.updateProfile(editForm);
+      await authService.updateProfile(editForm);
       await dispatch(fetchProfile());
       setEditOpen(false);
       setMsg('✅ تم تحديث الملف الشخصي بنجاح');
