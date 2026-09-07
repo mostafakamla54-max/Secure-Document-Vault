@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+# Sensitive areas are behind authentication and are not indexed.
+Disallow: /admin
+Disallow: /api

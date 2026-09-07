@@ -209,6 +209,13 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SESSION_COOKIE_SECURE = HTTPS_ENABLED
 CSRF_COOKIE_SECURE = HTTPS_ENABLED
 
+# Hardened cookie flags: never readable by client-side JS, restricted to
+# same-site requests.
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SAMESITE = 'Lax'
+
 # Redirect all HTTP traffic to HTTPS when enabled.
 SECURE_SSL_REDIRECT = HTTPS_ENABLED
 
