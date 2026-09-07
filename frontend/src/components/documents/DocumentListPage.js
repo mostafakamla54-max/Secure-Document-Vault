@@ -21,28 +21,8 @@ import LinkIcon from '@mui/icons-material/Link';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
-import DescriptionIcon from '@mui/icons-material/Description';
-import ImageIcon from '@mui/icons-material/Image';
-import AudioIcon from '@mui/icons-material/Audiotrack';
-import VideoIcon from '@mui/icons-material/VideoLibrary';
-import TableIcon from '@mui/icons-material/TableChart';
-import SlideshowIcon from '@mui/icons-material/Slideshow';
-import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import LockIcon from '@mui/icons-material/Lock';
-
-function typeIcon(ext, mime) {
-  const e = (ext || '').toLowerCase();
-  const m = (mime || '').toLowerCase();
-  if (m.startsWith('image/') || ['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp'].includes(e)) return <ImageIcon style={{ color: '#4a90d9' }} />;
-  if (m.startsWith('audio/') || ['mp3', 'wav', 'ogg', 'flac'].includes(e)) return <AudioIcon style={{ color: '#ff9ff3' }} />;
-  if (m.startsWith('video/') || ['mp4', 'avi', 'mkv', 'mov'].includes(e)) return <VideoIcon style={{ color: '#ff9a56' }} />;
-  if (['xls', 'xlsx', 'csv'].includes(e)) return <TableIcon style={{ color: '#2ecc71' }} />;
-  if (['ppt', 'pptx'].includes(e)) return <SlideshowIcon style={{ color: '#ff9a56' }} />;
-  if (['pdf'].includes(e)) return <DescriptionIcon style={{ color: '#e74c3c' }} />;
-  if (['doc', 'docx', 'txt'].includes(e)) return <DescriptionIcon style={{ color: '#4a90d9' }} />;
-  if (e === 'link' || m === 'link') return <LinkIcon style={{ color: '#00b894' }} />;
-  return <InsertDriveFileIcon style={{ color: '#a5b4fc' }} />;
-}
+import { typeIcon, categoryLabel, importanceLabel, formatShortDate, displayTitle } from '../../utils/labels';
 
 const ACCEPT_TYPES = '.pdf,.doc,.docx,.xls,.xlsx,.csv,.ppt,.pptx,.txt,.md,.rtf,.odt,.png,.jpg,.jpeg,.gif,.svg,.webp,.heic,.bmp,.mp3,.wav,.ogg,.flac,.aac,.m4a,.mp4,.avi,.mkv,.mov,.webm';
 
@@ -53,6 +33,8 @@ function formatSize(bytes) {
   if (kb < 1024) return `${kb.toFixed(1)} KB`;
   return `${(kb / 1024).toFixed(2)} MB`;
 }
+
+const CATEGORY_KEYS = ['general', 'personal', 'financial', 'legal', 'medical', 'education', 'work', 'other'];
 
 function DocumentListPage() {
   const dispatch = useDispatch();
@@ -169,7 +151,7 @@ function DocumentListPage() {
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           {typeIcon(params.row.original_extension, params.row.mime_type)}
           <Box>
-            <Typography sx={{ color: '#2d3748', fontWeight: 600 }}>{params.row.title}</Typography>
+            <Typography sx={{ color: '#2d3748', fontWeight: 600 }}>{displayTitle(params.row)}</Typography>
             {params.row.original_filename && params.row.original_filename !== params.row.title && (
               <Typography variant="caption" sx={{ color: '#a0aec0' }}>{params.row.original_filename}</Typography>
             )}
@@ -177,9 +159,29 @@ function DocumentListPage() {
         </Box>
       ),
     },
-    { field: 'category', headerName: 'التصنيف', width: 110 },
-    { field: 'importance', headerName: 'الأهمية', width: 100 },
-    { field: 'file_size', headerName: 'الحجم', width: 100, valueFormatter: (p) => formatSize(p.value) },
+    {
+      field: 'category',
+      headerName: 'التصنيف',
+      width: 110,
+      renderCell: (params) => (
+        <Chip size="small" label={categoryLabel(params.row.category)} sx={{ fontWeight: 700 }} />
+      ),
+    },
+    {
+      field: 'importance',
+      headerName: 'الأهمية',
+      width: 100,
+      renderCell: (params) => (
+        <Chip size="small" label={importanceLabel(params.row.importance)} variant="outlined" sx={{ fontWeight: 700 }} />
+      ),
+    },
+    { field: 'file_size', headerName: 'الحجم', width: 90, valueFormatter: (p) => formatSize(p.value) },
+    {
+      field: 'created_at',
+      headerName: 'تاريخ الرفع',
+      width: 100,
+      valueFormatter: (p) => formatShortDate(p.value),
+    },
     {
       field: 'encrypted',
       headerName: 'الحالة',
@@ -224,13 +226,9 @@ function DocumentListPage() {
           <InputLabel>التصنيف</InputLabel>
           <Select value={filters.category} label="التصنيف" onChange={(e) => setFilters({ ...filters, category: e.target.value })}>
             <MenuItem value="">الكل</MenuItem>
-            <MenuItem value="general">عام</MenuItem>
-            <MenuItem value="personal">شخصي</MenuItem>
-            <MenuItem value="financial">مالي</MenuItem>
-            <MenuItem value="legal">قانوني</MenuItem>
-            <MenuItem value="technical">تقني</MenuItem>
-            <MenuItem value="medical">طبي</MenuItem>
-            <MenuItem value="contract">عقد</MenuItem>
+            {CATEGORY_KEYS.map((c) => (
+              <MenuItem key={c} value={c}>{categoryLabel(c)}</MenuItem>
+            ))}
           </Select>
         </FormControl>
       </Box>
@@ -343,13 +341,9 @@ function DocumentListPage() {
             <FormControl fullWidth>
               <InputLabel>التصنيف</InputLabel>
               <Select value={uploadForm.category} label="التصنيف" onChange={(e) => setUploadForm({ ...uploadForm, category: e.target.value })}>
-                <MenuItem value="general">عام</MenuItem>
-                <MenuItem value="personal">شخصي</MenuItem>
-                <MenuItem value="financial">مالي</MenuItem>
-                <MenuItem value="legal">قانوني</MenuItem>
-                <MenuItem value="technical">تقني</MenuItem>
-                <MenuItem value="medical">طبي</MenuItem>
-                <MenuItem value="contract">عقد</MenuItem>
+                {CATEGORY_KEYS.map((c) => (
+                  <MenuItem key={c} value={c}>{categoryLabel(c)}</MenuItem>
+                ))}
               </Select>
             </FormControl>
             <FormControl fullWidth>
