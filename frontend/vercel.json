@@ -1,8 +1,11 @@
 {
+  "rootDirectory": "frontend",
+  "buildCommand": "npm run build",
+  "outputDirectory": "build",
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://REPLACE_ME_TUNNEL_URL/api/:path*"
+      "destination": "https://usual-settings-britney-correspondence.trycloudflare.com/api/:path*"
     },
     {
       "source": "/**",
