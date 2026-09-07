@@ -1,40 +1,31 @@
-# Render Blueprint — one click deploy to a permanent https:// URL.
-# Docs: https://render.com/docs/blueprint-spec
 databases:
   - name: secure-vault-db
     databaseName: secure_vault
-    user: vault_service
+    user: vault_user
     plan: free
+    region: frankfurt
 
 services:
   - type: web
-    name: secure-vault-backend
-    runtime: docker
+    name: secure-vault-api
+    runtime: python
     plan: free
-    rootDir: .
-    dockerfilePath: ./backend/Dockerfile
-    healthCheckPath: /
+    region: frankfurt
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt && python manage.py migrate --noinput && python manage.py collectstatic --noinput
+    startCommand: gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --threads 4 --timeout 60
     envVars:
-      - key: PORT
-        value: 8000
       - key: DJANGO_SECRET_KEY
         generateValue: true
       - key: DJANGO_DEBUG
         value: "False"
-      - key: DJANGO_ALLOWED_HOSTS
-        value: "*"
       - key: DJANGO_HTTPS
         value: "True"
       - key: USE_SQLITE
         value: "0"
-      # UI and API are same-origin (both served by Django/Whitenoise), so CORS
-      # is never triggered on Render — no CORS configuration is required.
-      - key: SUPERVISOR_USERNAME
-        value: admin
-      - key: SUPERVISOR_PASSWORD
-        generateValue: true
-      - key: SUPERVISOR_EMAIL
-        value: admin@securevault.com
-      - fromDatabase:
+      - key: CORS_ALLOWED_ORIGINS
+        value: "https://suredoc-vault.vercel.app,https://secure-document-vault-mostafakamla54-max.vercel.app,http://localhost:3000"
+      - key: DATABASE_URL
+        fromDatabase:
           name: secure-vault-db
           property: connectionString

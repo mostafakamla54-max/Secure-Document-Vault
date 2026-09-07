@@ -224,6 +224,7 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+CELERY_TASK_ALWAYS_EAGER = not bool(os.environ.get('REDIS_URL'))
 
 # Cache: local cache for SQLite dev mode, Redis for production
 if USE_SQLITE:
@@ -235,15 +236,24 @@ if USE_SQLITE:
     }
     SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 else:
-    CACHES = {
-        'default': {
-            'BACKEND': 'django_redis.cache.RedisCache',
-            'LOCATION': os.environ.get('REDIS_URL', 'redis://localhost:6379/0'),
-            'OPTIONS': {'CLIENT_CLASS': 'django_redis.client.DefaultClient'},
+    if os.environ.get('REDIS_URL'):
+        CACHES = {
+            'default': {
+                'BACKEND': 'django_redis.cache.RedisCache',
+                'LOCATION': os.environ.get('REDIS_URL', 'redis://localhost:6379/0'),
+                'OPTIONS': {'CLIENT_CLASS': 'django_redis.client.DefaultClient'},
+            }
         }
-    }
-    SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
-    SESSION_CACHE_ALIAS = 'default'
+        SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+        SESSION_CACHE_ALIAS = 'default'
+    else:
+        CACHES = {
+            'default': {
+                'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+                'LOCATION': 'secure-vault-cache',
+            }
+        }
+        SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
 # Swagger
 SWAGGER_SETTINGS = {
