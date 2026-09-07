@@ -20,13 +20,21 @@ def get_client_ip(request):
 
 
 def custom_exception_handler(exc, context):
-    """Custom DRF exception handler that wraps errors in the standard envelope."""
+    """Custom DRF exception handler that wraps errors in the standard envelope.
+
+    Internal exception text is never echoed to clients; a generic message is
+    used outside DEBUG so sensitive details stay out of API responses.
+    """
+    from django.conf import settings
     response = exception_handler(exc, context)
     if response is not None:
         original = response.data
+        safe_message = str(getattr(exc, 'detail', '') or '') or str(exc)
+        if not settings.DEBUG:
+            safe_message = 'حدث خطأ، حاول مرة أخرى'
         response.data = standard_response(
             success=False,
-            message=str(exc),
+            message=safe_message,
             errors=original if isinstance(original, dict) else {'non_field_errors': original},
         )
     return response

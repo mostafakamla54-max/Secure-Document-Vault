@@ -9,9 +9,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-change-me-in-production')
 
-DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
+# Debug is OFF by default; enable explicitly with DJANGO_DEBUG=True in dev only.
+DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['*']
+# Restrict hosts via DJANGO_ALLOWED_HOSTS (comma-separated). A wildcard is
+# only used as a last-resort fallback when the variable is not configured.
+_ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', '')
+if _ALLOWED_HOSTS:
+    ALLOWED_HOSTS = [h.strip() for h in _ALLOWED_HOSTS.split(',') if h.strip()]
+else:
+    ALLOWED_HOSTS = ['*']
 
 # Application definition
 INSTALLED_APPS = [
