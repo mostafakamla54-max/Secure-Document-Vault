@@ -31,6 +31,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 
 class RegisterSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(required=False, allow_blank=True, max_length=150)
     password = serializers.CharField(write_only=True, validators=[validate_password_strength])
     password_confirm = serializers.CharField(write_only=True)
     phone_number = serializers.CharField(required=False, allow_blank=True, validators=[validate_phone_number])
@@ -52,11 +53,12 @@ class RegisterSerializer(serializers.ModelSerializer):
         if attrs['password'] != attrs['password_confirm']:
             raise serializers.ValidationError({'password_confirm': 'كلمتا المرور غير متطابقتين'})
 
-        username = attrs.get('username')
         email = attrs.get('email')
+        username = (attrs.get('username') or '').strip() or (email or '').strip().lower()
+        attrs['username'] = username
 
-        if username and User.objects.filter(username__iexact=username.strip()).exists():
-            raise serializers.ValidationError({'username': 'اسم المستخدم موجود مسبقاً، اختر اسماً آخر'})
+        if username and User.objects.filter(username__iexact=username).exists():
+            raise serializers.ValidationError({'username': 'اسم المستخدم موجود مسبقاً'})
         if email and User.objects.filter(email__iexact=email.strip().lower()).exists():
             raise serializers.ValidationError({'email': 'البريد الإلكتروني مستخدم، استخدم بريداً آخر'})
 
@@ -64,8 +66,8 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def validate_username(self, value):
         value = value.strip()
-        if User.objects.filter(username__iexact=value).exists():
-            raise serializers.ValidationError('اسم المستخدم موجود مسبقاً، اختر اسماً آخر')
+        if value and User.objects.filter(username__iexact=value).exists():
+            raise serializers.ValidationError('اسم المستخدم موجود مسبقاً')
         return value
 
     def validate_email(self, value):

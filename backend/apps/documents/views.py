@@ -38,7 +38,12 @@ class DocumentViewSet(viewsets.ModelViewSet):
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        return Document.objects.filter(user=self.request.user, is_deleted=False)
+        return Document.objects.filter(is_deleted=False)
+
+    def _ensure_owner_or_admin(self, request, instance):
+        if instance.user_id != request.user.id and not request.user.is_superuser:
+            from rest_framework.exceptions import PermissionDenied
+            raise PermissionDenied('لا يمكنك تعديل وثيقة لا تملكها')
 
     def get_serializer_class(self):
         if self.action == 'create':
@@ -56,6 +61,8 @@ class DocumentViewSet(viewsets.ModelViewSet):
         )
 
     def perform_update(self, serializer):
+        instance = serializer.instance
+        self._ensure_owner_or_admin(self.request, instance)
         instance = serializer.save()
         AuditLog.objects.log(
             actor=self.request.user,
@@ -67,6 +74,7 @@ class DocumentViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
+        self._ensure_owner_or_admin(request, instance)
         instance.soft_delete()
         AuditLog.objects.log(
             actor=request.user,
@@ -99,7 +107,7 @@ class DocumentDownloadView(APIView):
     @rate_limit(calls=60, period=60)
     def get(self, request, pk):
         doc = get_object_or_404(
-            Document, pk=pk, user=request.user, is_deleted=False
+            Document, pk=pk, is_deleted=False
         )
         content = doc.decrypt_content()
         if not content:
@@ -174,13 +182,11 @@ class DocumentVersionViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, v
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return DocumentVersion.objects.filter(
-            document__user=self.request.user, document__is_deleted=False
-        )
+        return DocumentVersion.objects.filter(document__is_deleted=False)
 
     def list(self, request, *args, **kwargs):
         doc = get_object_or_404(
-            Document, pk=self.kwargs['document_pk'], user=request.user, is_deleted=False
+            Document, pk=self.kwargs['document_pk'], is_deleted=False
         )
         versions = DocumentVersion.objects.filter(document=doc)
         return Response(self.get_serializer(versions, many=True).data)
@@ -204,7 +210,7 @@ class DocumentAiAnalyzeView(APIView):
     @rate_limit(calls=10, period=60)
     def post(self, request, pk):
         doc = get_object_or_404(
-            Document, pk=pk, user=request.user, is_deleted=False
+            Document, pk=pk, is_deleted=False
         )
         from .ai_service import analyze_document
         raw = doc.decrypt_content() or b''
@@ -238,7 +244,7 @@ class DocumentEncryptedTextView(APIView):
     @rate_limit(calls=30, period=60)
     def get(self, request, pk):
         doc = get_object_or_404(
-            Document, pk=pk, user=request.user, is_deleted=False
+            Document, pk=pk, is_deleted=False
         )
         if not doc.encrypted_file:
             return Response(
@@ -274,17 +280,16 @@ class DocumentEncryptedTextView(APIView):
 
 
 class DocumentDecryptTextView(APIView):
-    """Decrypt on the server and return the original content (owner only).
+    """Decrypt on the server and return the original content.
 
-    The key never leaves the server; only the owner may trigger decryption,
-    and every decrypt is written to the audit log.
+    The key never leaves the server; every decrypt is written to the audit log.
     """
     permission_classes = [permissions.IsAuthenticated]
 
     @rate_limit(calls=30, period=60)
     def post(self, request, pk):
         doc = get_object_or_404(
-            Document, pk=pk, user=request.user, is_deleted=False
+            Document, pk=pk, is_deleted=False
         )
         raw = doc.decrypt_content() or b''
         if not raw:

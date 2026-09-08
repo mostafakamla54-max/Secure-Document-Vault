@@ -2,7 +2,6 @@ import React from 'react';
 import { Box, Typography, TextField, Button, Alert, CircularProgress, InputAdornment } from '@mui/material';
 import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import PersonIcon from '@mui/icons-material/Person';
 import EmailIcon from '@mui/icons-material/Email';
 import BadgeIcon from '@mui/icons-material/Badge';
 import LockIcon from '@mui/icons-material/Lock';
@@ -81,7 +80,8 @@ function RegisterPage() {
     }
     setErrors({});
     setGeneralError('');
-    const result = await dispatch(registerUser(form));
+    const payload = { ...form, username: email };
+    const result = await dispatch(registerUser(payload));
     if (result.type === 'auth/register/fulfilled') {
       navigate('/');
     } else {
@@ -141,12 +141,7 @@ function RegisterPage() {
 
           <form onSubmit={handleSubmit}>
             <div className="auth-field">
-              <label>👤 اسم المستخدم</label>
-              <TextField {...TextFieldProps('username', 'اسم المستخدم', <PersonIcon />)} />
-            </div>
-
-            <div className="auth-field">
-              <label>📧 البريد الإلكتروني</label>
+              <label>📧 البريد الإلكتروني (هو اسم المستخدم)</label>
               <TextField {...TextFieldProps('email', 'البريد الإلكتروني', <EmailIcon />, { type: 'email' })} />
             </div>
 
