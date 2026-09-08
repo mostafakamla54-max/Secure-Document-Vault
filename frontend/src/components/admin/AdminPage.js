@@ -5,6 +5,7 @@ import {
   Dialog, DialogTitle, DialogContent, DialogActions, CircularProgress,
 } from '@mui/material';
 import api from '../../services/api';
+import { actionLabel, objectLabel, severityLabel, severityChip, fmtTime } from '../../utils/auditLabels';
 
 const L = {
   title: '\u0644\u0648\u062D\u0629 \u062A\u062D\u0643\u0645 \u0627\u0644\u0645\u062F\u064A\u0631',
@@ -187,6 +188,8 @@ function AdminPage() {
                 <TableCell>\u0627\u0644\u0648\u0642\u062A</TableCell>
                 <TableCell>\u0627\u0644\u0645\u0633\u062A\u062E\u062F\u0645</TableCell>
                 <TableCell>\u0627\u0644\u0625\u062C\u0631\u0627\u0621</TableCell>
+                <TableCell>\u0627\u0644\u0646\u0648\u0639</TableCell>
+                <TableCell>\u0627\u0644\u062E\u0637\u0648\u0631\u0629</TableCell>
                 <TableCell>\u0627\u0644\u062A\u0641\u0627\u0635\u064A\u0644</TableCell>
                 <TableCell>IP</TableCell>
               </TableRow>
@@ -194,9 +197,11 @@ function AdminPage() {
             <TableBody>
               {audit.map((l) => (
                 <TableRow key={l.id}>
-                  <TableCell>{new Date(l.created_at).toLocaleString('ar')}</TableCell>
+                  <TableCell>{fmtTime(l.created_at)}</TableCell>
                   <TableCell>{l.actor}</TableCell>
-                  <TableCell><Chip label={l.action} size="small" /></TableCell>
+                  <TableCell><Chip label={actionLabel(l.action)} size="small" /></TableCell>
+                  <TableCell><Chip label={objectLabel(l.object_type)} size="small" /></TableCell>
+                  <TableCell>{severityChip(l.severity)}</TableCell>
                   <TableCell sx={{ maxWidth: 260, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{l.detail}</TableCell>
                   <TableCell>{l.ip_address}</TableCell>
                 </TableRow>

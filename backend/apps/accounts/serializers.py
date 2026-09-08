@@ -10,6 +10,7 @@ User = get_user_model()
 
 class UserProfileSerializer(serializers.ModelSerializer):
     document_count = serializers.SerializerMethodField()
+    share_count = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -17,12 +18,16 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'id', 'username', 'email', 'first_name', 'last_name', 'phone_number',
             'organization', 'profile_image', 'two_factor_enabled', 'email_verified',
             'is_staff', 'is_superuser',
-            'created_at', 'document_count',
+            'created_at', 'document_count', 'share_count',
         ]
-        read_only_fields = ['id', 'email_verified', 'created_at', 'document_count']
+        read_only_fields = ['id', 'email_verified', 'created_at', 'document_count', 'share_count']
 
     def get_document_count(self, obj):
         return obj.documents.filter(is_deleted=False).count()
+
+    def get_share_count(self, obj):
+        from apps.sharing.models import DocumentShare
+        return DocumentShare.objects.filter(shared_by=obj, is_active=True).count()
 
 
 class RegisterSerializer(serializers.ModelSerializer):

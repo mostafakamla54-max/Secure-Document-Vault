@@ -3,6 +3,7 @@ import { Paper, Typography, CircularProgress } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import Layout from '../common/Layout';
 import { auditService } from '../../services/auditService';
+import { actionLabel, objectChip, severityChip, fmtTime } from '../../utils/auditLabels';
 
 function AuditLogPage() {
   const [logs, setLogs] = React.useState([]);
@@ -23,12 +24,12 @@ function AuditLogPage() {
   }, []);
 
   const columns = [
-    { field: 'created_at', headerName: 'الوقت', width: 180 },
-    { field: 'actor', headerName: 'المستخدم', width: 120 },
-    { field: 'action', headerName: 'الإجراء', width: 200 },
-    { field: 'object_type', headerName: 'النوع', width: 120 },
+    { field: 'created_at', headerName: 'الوقت', width: 160, valueFormatter: (p) => fmtTime(p.value) },
+    { field: 'actor_username', headerName: 'المستخدم', width: 140, valueGetter: (p) => p.row.actor_username || p.row.actor },
+    { field: 'action', headerName: 'الإجراء', width: 210, renderCell: (params) => actionLabel(params.value) },
+    { field: 'object_type', headerName: 'النوع', width: 110, renderCell: (params) => objectChip(params.value) },
     { field: 'detail', headerName: 'التفاصيل', flex: 1 },
-    { field: 'severity', headerName: 'الخطورة', width: 100 },
+    { field: 'severity', headerName: 'الخطورة', width: 110, renderCell: (params) => severityChip(params.value) },
   ];
 
   return (

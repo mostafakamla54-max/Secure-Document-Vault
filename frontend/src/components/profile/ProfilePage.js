@@ -30,7 +30,7 @@ function ProfilePage() {
   const [editOpen, setEditOpen] = React.useState(false);
   const [passOpen, setPassOpen] = React.useState(false);
   const [msg, setMsg] = React.useState('');
-  const [editForm, setEditForm] = React.useState({ first_name: '', last_name: '', phone: '' });
+  const [editForm, setEditForm] = React.useState({ first_name: '', last_name: '', phone_number: '' });
   const [passForm, setPassForm] = React.useState({ old_password: '', new_password: '', confirm: '' });
   const [twofa, setTwofa] = React.useState({ status: null, loading: true });
   const [twofaSetup, setTwofaSetup] = React.useState(null);
@@ -111,7 +111,7 @@ function ProfilePage() {
   };
 
   const openEdit = () => {
-    setEditForm({ first_name: user?.first_name || '', last_name: user?.last_name || '', phone: user?.phone || '' });
+    setEditForm({ first_name: user?.first_name || '', last_name: user?.last_name || '', phone_number: user?.phone_number || '' });
     setEditOpen(true);
   };
 
@@ -198,8 +198,8 @@ function ProfilePage() {
             <Typography variant="h6" sx={{ fontWeight: 800, color: '#4a90d9', mb: 3 }}>🔍 معلومات الحساب</Typography>
             <Grid container spacing={2}>
               <InfoItem icon={<EmailIcon />} label="البريد الإلكتروني" value={user?.email || '-'} />
-              <InfoItem icon={<PhoneIcon />} label="رقم الهاتف" value={user?.phone || 'غير محدد'} />
-              <InfoItem icon={<CalendarTodayIcon />} label="تاريخ التسجيل" value={user?.date_joined ? new Date(user.date_joined).toLocaleDateString('ar') : '-'} />
+              <InfoItem icon={<PhoneIcon />} label="رقم الهاتف" value={user?.phone_number || 'غير محدد'} />
+              <InfoItem icon={<CalendarTodayIcon />} label="تاريخ التسجيل" value={user?.created_at ? new Date(user.created_at).toLocaleDateString('ar') : '-'} />
             </Grid>
           </Paper>
 
@@ -261,7 +261,7 @@ function ProfilePage() {
         <DialogContent sx={{ pt: 2 }}>
           <TextField label="الاسم الأول" value={editForm.first_name} onChange={(e) => setEditForm({ ...editForm, first_name: e.target.value })} fullWidth sx={{ mb: 2 }} />
           <TextField label="الاسم الأخير" value={editForm.last_name} onChange={(e) => setEditForm({ ...editForm, last_name: e.target.value })} fullWidth sx={{ mb: 2 }} />
-          <TextField label="رقم الهاتف" value={editForm.phone} onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })} fullWidth />
+          <TextField label="رقم الهاتف" value={editForm.phone_number} onChange={(e) => setEditForm({ ...editForm, phone_number: e.target.value })} fullWidth />
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setEditOpen(false)} sx={{ color: '#718096' }}>إلغاء</Button>
