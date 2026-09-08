@@ -52,9 +52,11 @@ module.exports = async function handler(req, res) {
     res.status(upstream.status);
     for (const [key, value] of upstream.headers) {
       const lower = key.toLowerCase();
-      if (['content-encoding', 'transfer-encoding', 'connection'].includes(lower)) continue;
+      if (['content-encoding', 'transfer-encoding', 'connection', 'server', 'via']
+        .includes(lower) || lower.startsWith('x-railway') || lower.startsWith('x-hikari')) continue;
       res.setHeader(key, value);
     }
+    res.setHeader('Cache-Control', 'no-store');
     res.end(body);
   } catch (err) {
     res.status(502).setHeader('content-type', 'application/json');
