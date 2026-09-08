@@ -2,7 +2,7 @@ import React from 'react';
 import { Typography, TextField, Button, Alert, CircularProgress, InputAdornment } from '@mui/material';
 import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import PersonIcon from '@mui/icons-material/Person';
+import EmailIcon from '@mui/icons-material/Email';
 import LockIcon from '@mui/icons-material/Lock';
 import PinIcon from '@mui/icons-material/Pin';
 import GoogleIcon from '@mui/icons-material/Google';
@@ -127,23 +127,24 @@ function LoginPage() {
         ) : (
           <form onSubmit={handleSubmit}>
             <div className="auth-field">
-              <label>👤 اسم المستخدم</label>
+              <label>📧 البريد الإلكتروني</label>
               <TextField
                 name="username"
                 value={form.username}
                 onChange={handleChange}
                 fullWidth
                 required
+                type="email"
                 variant="outlined"
-                placeholder="أدخل اسم المستخدم"
+                placeholder="أدخل بريدك الإلكتروني"
                 autoCapitalize="none"
                 autoCorrect="off"
                 spellCheck={false}
-                autoComplete="username"
+                autoComplete="email"
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <PersonIcon />
+                      <EmailIcon />
                     </InputAdornment>
                   ),
                 }}
