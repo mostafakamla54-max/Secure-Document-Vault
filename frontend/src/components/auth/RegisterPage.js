@@ -139,7 +139,7 @@ function RegisterPage() {
             </Alert>
           )}
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} noValidate>
             <div className="auth-field">
               <label>📧 البريد الإلكتروني (هو اسم المستخدم)</label>
               <TextField {...TextFieldProps('email', 'البريد الإلكتروني', <EmailIcon />, { type: 'email' })} />

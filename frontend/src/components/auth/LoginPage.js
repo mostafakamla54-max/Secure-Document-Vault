@@ -74,7 +74,7 @@ function LoginPage() {
         )}
 
         {step === 'otp' ? (
-          <form onSubmit={handleOtpSubmit}>
+          <form onSubmit={handleOtpSubmit} noValidate>
             <div className="auth-field">
               <label>🔢 رمز التحقق 2FA</label>
               <TextField
@@ -125,7 +125,7 @@ function LoginPage() {
             </Typography>
           </form>
         ) : (
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} noValidate>
             <div className="auth-field">
               <label>📧 البريد الإلكتروني</label>
               <TextField
