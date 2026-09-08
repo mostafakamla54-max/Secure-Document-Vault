@@ -5,7 +5,7 @@ import {
   Dialog, DialogTitle, DialogContent, DialogActions, CircularProgress,
 } from '@mui/material';
 import api from '../../services/api';
-import { actionLabel, objectLabel, severityLabel, severityChip, fmtTime } from '../../utils/auditLabels';
+import { actionLabel, objectLabel, severityChip, fmtTime } from '../../utils/auditLabels';
 
 const L = {
   title: '\u0644\u0648\u062D\u0629 \u062A\u062D\u0643\u0645 \u0627\u0644\u0645\u062F\u064A\u0631',
