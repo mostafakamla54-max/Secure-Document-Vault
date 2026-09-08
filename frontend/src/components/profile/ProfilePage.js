@@ -15,6 +15,7 @@ import VerifiedIcon from '@mui/icons-material/Verified';
 import SecurityIcon from '@mui/icons-material/Security';
 import QrCode2Icon from '@mui/icons-material/QrCode2';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
+import HistoryIcon from '@mui/icons-material/History';
 import { QRCodeSVG } from 'qrcode.react';
 import Layout from '../common/Layout';
 import { fetchProfile } from '../../store/slices/authSlice';
@@ -186,7 +187,8 @@ function ProfilePage() {
             <Box sx={{ mt: 3 }}>
               <Button variant="contained" className="btn-primary" startIcon={<EditIcon />} fullWidth sx={{ mb: 1.5 }} onClick={openEdit}>تعديل الملف الشخصي</Button>
               <Button variant="contained" className="btn-nery" startIcon={<LockResetIcon />} fullWidth sx={{ mb: 1.5 }} onClick={() => setPassOpen(true)}>تغيير كلمة المرور</Button>
-              <Button variant="outlined" onClick={() => navigate('/documents')} fullWidth sx={{ color: '#4a90d9', borderColor: '#4a90d9' }}>عرض وثائقي</Button>
+              <Button variant="outlined" onClick={() => navigate('/documents')} fullWidth sx={{ color: '#4a90d9', borderColor: '#4a90d9', mb: 1.5 }}>عرض وثائقي</Button>
+              <Button variant="outlined" onClick={() => navigate('/audit')} fullWidth startIcon={<HistoryIcon />} sx={{ color: '#7c6df0', borderColor: '#7c6df0' }}>عرض النشاطات</Button>
             </Box>
           </Paper>
         </Grid>
