@@ -47,6 +47,18 @@ class RegisterSerializer(serializers.ModelSerializer):
             'username': {
                 'validators': [],
             },
+            'first_name': {
+                'required': False,
+                'allow_blank': True,
+            },
+            'last_name': {
+                'required': False,
+                'allow_blank': True,
+            },
+            'organization': {
+                'required': False,
+                'allow_blank': True,
+            },
         }
 
     def validate(self, attrs):
