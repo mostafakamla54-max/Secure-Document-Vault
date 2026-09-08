@@ -119,11 +119,13 @@ class AdminAuditView(APIView):
     permission_classes = [IsAdmin]
 
     def get(self, request):
+        from apps.audit.serializers import _rebuild_detail, _translate_detail
         logs = AuditLog.objects.select_related('actor').order_by('-created_at')[:300]
         data = [{
             'id': l.id, 'actor': getattr(l.actor, 'username', None),
             'action': l.action, 'object_type': l.object_type,
-            'object_id': l.object_id, 'detail': l.detail,
+            'object_id': l.object_id,
+            'detail': _rebuild_detail(l) if l.detail and '\ufffd' in l.detail else _translate_detail(l.action, l.detail),
             'ip_address': l.ip_address, 'severity': l.severity,
             'created_at': l.created_at,
         } for l in logs]
